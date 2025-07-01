@@ -1,0 +1,52 @@
+---
+// src/pages/music.astro
+import Layout from '../layouts/Layout.astro'
+import SongTable from '../components/SongTable.jsx'
+import FancyText from '../components/FancyText.jsx'
+import supabase from '../lib/supabase'
+
+// 📥 consulta
+const { data: rows, error } = await supabase
+  .from('cantos')
+  .select(`
+    id,
+    titulo,
+    tono,
+    autor,
+    version,
+    categorias:canto_categoria(
+      categoria:categorias(nombre)
+    )
+  `)
+
+if (error) throw error
+
+// 🔄 adapta al shape que espera SongTable
+const data = rows.map(r => ({
+  id: r.id,
+  title: r.titulo,
+  version: r.version,
+  key: r.tono,
+  author: r.autor,
+  categories: r.categorias.map(c => c.categoria.nombre)
+}))
+---
+
+<Layout title="Lista de Canciones">
+  <h2 class="text-center my-8">
+    <FancyText
+      text="Lista de Canciones"
+      colors={['#40ffaa', '#4079ff', '#ff40c6']}
+      animationSpeed={4}
+      showBorder
+      className="text-4xl font-extrabold"
+      client:only="react"
+    />
+  </h2>
+<br>
+  <SongTable songs={data} client:only="react" />
+
+  <br><br><br><br><br><br>
+</Layout>
+
+

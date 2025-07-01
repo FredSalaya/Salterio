@@ -1,0 +1,151 @@
+---
+// -------- Config de la página --------
+// 1) Con esta línea le decimos a Astro que NO genere la ruta
+//    en tiempo de build: se servirá bajo demanda (SSR).
+export const prerender = false;          
+
+// -------- Imports --------
+import Layout from '../../layouts/Layout.astro'
+import supabase from '../../lib/supabase'
+
+// -------- Param y consulta --------
+const { id } = Astro.params            // ← /music/<id>
+
+const { data: song, error } = await supabase
+  .from('cantos')
+  .select(`
+    id, titulo, tono, autor, version, cuerpo, historia,
+    fundamento_biblico, youtube_url, mp3_urls,
+    categorias:canto_categoria(categorias(nombre))
+  `)
+  .eq('id', id)
+  .single()
+
+if (error) throw error
+---
+<!-- PAGE HTML -------------------------------------------------------- -->
+
+<Layout title={song.titulo}>
+  <div class="flex flex-col md:flex-row gap-8">
+
+    <!-- MENÚ LATERAL -->
+    <aside class="md:w-48">
+      <ul class="space-y-1 sticky top-24">
+        {[
+          ['letra','Letra'],
+          ['video','Video'],
+          ['pdf','PDF'],
+          ['historia','Historia'],
+          ['detalles','Detalles'],
+          ['audios','Audios'],
+          ['editar','Editar'],
+        ].map(([key,label]) => (
+          <li>
+            <a href={`#${key}`}
+               class="flex items-center gap-2 rounded-lg px-4 py-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700 text-sm">
+              <span class="font-medium">{label}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <section class="flex-1 space-y-12">
+
+      <!-- Letra -->
+      <article id="letra">
+        <h2 class="text-xl font-bold mb-4">Letra &amp; Acordes</h2>
+        <pre class="whitespace-pre-wrap bg-gray-50 p-4 rounded-md border">{song.cuerpo}</pre>
+      </article>
+
+      <!-- Video -->
+      {song.youtube_url && (
+        <article id="video">
+          <h2 class="text-xl font-bold mb-4">Video</h2>
+          <div class="aspect-video">
+            <iframe
+              class="w-full h-full rounded"
+              src={song.youtube_url.replace('watch?v=', 'embed/')}
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            />
+          </div>
+        </article>
+      )}
+
+      <!-- PDF (placeholder) -->
+      <article id="pdf">
+        <h2 class="text-xl font-bold mb-4">PDF</h2>
+        <p class="text-gray-500">Aún no hay PDF subido.</p>
+      </article>
+
+      <!-- Historia -->
+      {song.historia && (
+        <article id="historia">
+          <h2 class="text-xl font-bold mb-4">Historia</h2>
+          <p class="prose">{song.historia}</p>
+        </article>
+      )}
+
+      <!-- Detalles -->
+      <article id="detalles">
+        <h2 class="text-xl font-bold mb-4">Detalles</h2>
+        <ul class="text-sm space-y-1">
+          <li><strong>Tono:</strong> {song.tono}</li>
+          <li><strong>Autor:</strong> {song.autor}</li>
+          {song.version && <li><strong>Versión:</strong> {song.version}</li>}
+          <li>
+            <strong>Categorías:</strong>
+            {song.categorias.map(c => c.categorias.nombre).join(', ')}
+          </li>
+        </ul>
+      </article>
+
+      <!-- Audios -->
+      {song.mp3_urls?.length ? (
+        <article id="audios">
+          <h2 class="text-xl font-bold mb-4">Audios</h2>
+          <ul class="space-y-2">
+            {song.mp3_urls.map(url => (
+              <li>
+                <audio controls src={url} class="w-full" />
+              </li>
+            ))}
+          </ul>
+        </article>
+      ) : (
+        <article id="audios"><p class="text-gray-500">Sin audios.</p></article>
+      )}
+
+      <!-- Editar -->
+      <article id="editar">
+        <h2 class="text-xl font-bold mb-4">Editar</h2>
+        <p class="text-gray-500">Función en construcción 🔧</p>
+      </article>
+    </section>
+  </div>
+
+  <!-- Script para resaltar la sección activa -->
+ <script is:inline>
+  document.addEventListener('scroll', () => {
+    const sections = [...document.querySelectorAll('section article')];
+    const scrollY  = window.scrollY + 100;
+
+    sections.forEach((sec) => {
+      const top = sec.offsetTop;
+      const bottom = top + sec.offsetHeight;
+
+      // ⬇️ backtick limpio, sin \
+      const link = document.querySelector(`aside a[href="#${sec.id}"]`);
+
+      if (scrollY >= top && scrollY < bottom) {
+        link.classList.add('bg-gray-100', 'text-gray-700', 'font-semibold');
+      } else {
+        link.classList.remove('bg-gray-100', 'text-gray-700', 'font-semibold');
+      }
+    });
+  });
+</script>
+</Layout>

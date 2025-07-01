@@ -1,0 +1,30 @@
+{
+  "name": "music20",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@ar-dacity/ardacity-pixel-transition": "^1.0.1",
+    "@astrojs/react": "^4.3.0",
+    "@heroicons/react": "^2.2.0",
+    "@supabase/supabase-js": "^2.50.2",
+    "@tailwindcss/vite": "^4.1.11",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "astro": "^5.10.1",
+    "gsap": "^3.13.0",
+    "motion": "^12.19.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "tailwindcss": "^4.1.11"
+  },
+  "devDependencies": {
+    "@tailwindcss/aspect-ratio": "^0.4.2",
+    "@tailwindcss/typography": "^0.5.16"
+  }
+}

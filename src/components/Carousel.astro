@@ -1,0 +1,78 @@
+---
+// src/components/Carousel.astro
+export interface Props {
+  /** Array of ads with image URL, alt text and link */
+  ads: { image: string; alt: string; href: string }[]
+  /** Autoplay interval in milliseconds (default 5000) */
+  interval?: number
+}
+const { ads, interval = 5000 } = Astro.props as Props
+---
+
+<!-- Carousel container with fixed aspect ratio 1383x512 -->
+<div
+  class="relative overflow-hidden w-full  
+         aspect-[3/2]      /* 3:2 en móvil (más alto) */  
+         md:aspect-video   /* 16:9 en tablet */  
+         lg:aspect-[1383/512] /* 2.7:1 en desktop */"
+>
+  <!-- Slides container -->
+  <div class="carousel-slides flex transition-transform duration-500 h-full">
+    {ads.map(ad => (
+      <a href={ad.href} class="min-w-full block h-full" >
+        <img
+          src={ad.image}
+          alt={ad.alt}
+          class="w-full h-full object-cover"
+        />
+      </a>
+    ))}
+  </div>
+
+  <!-- Navigation buttons -->
+  <button
+    class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-800 bg-opacity-50 text-white p-2 rounded-full"
+    aria-label="Anterior"
+    id="carousel-prev"
+  >
+    ‹
+  </button>
+  <button
+    class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-800 bg-opacity-50 text-white p-2 rounded-full"
+    aria-label="Siguiente"
+    id="carousel-next"
+  >
+    ›
+  </button>
+</div>
+
+<script type="module">
+  // recuperamos el valor desde el DOM
+  const container = document.querySelector('[data-interval]')
+  const autoplayDelay = parseInt(container?.dataset.interval || '0', 10) || 5000
+
+  // resto de tu initCarousel pero usando autoplayDelay
+  let currentIndex = 0
+  const slidesContainer = document.querySelector('.carousel-slides')
+  const totalSlides = slidesContainer?.children.length || 0
+
+  function update() {
+    slidesContainer.style.transform = `translateX(-${currentIndex * 100}%)`
+  }
+
+  document.getElementById('carousel-prev')?.addEventListener('click', () => {
+    currentIndex = (currentIndex - 1 + totalSlides) % totalSlides
+    update()
+  })
+  document.getElementById('carousel-next')?.addEventListener('click', () => {
+    currentIndex = (currentIndex + 1) % totalSlides
+    update()
+  })
+
+  setInterval(() => {
+    currentIndex = (currentIndex + 1) % totalSlides
+    update()
+  }, autoplayDelay)
+</script>
+
+
