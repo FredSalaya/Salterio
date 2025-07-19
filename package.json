@@ -21,9 +21,12 @@
     "motion": "^12.19.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "send": "^1.2.0",
+    "server-destroy": "^1.0.1",
     "tailwindcss": "^4.1.11"
   },
   "devDependencies": {
+    "@astrojs/node": "^9.3.0",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/typography": "^0.5.16"
   }

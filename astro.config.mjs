@@ -1,15 +1,19 @@
+// astro.config.mjs
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig } from 'astro/config'
 
-import tailwindcss from '@tailwindcss/vite';
+import react from '@astrojs/react'
+import node  from '@astrojs/node'        // 👈 1 ‑ importa el adapter
 
-import react from '@astrojs/react';
+// ‑‑ si prefieres la integración oficial de Tailwind, usa:
+// import tailwind from '@astrojs/tailwind'
+// integrations: [react(), tailwind()]
 
-// https://astro.build/config
+import tailwindcss from '@tailwindcss/vite'
+
 export default defineConfig({
-  vite: {
-    plugins: [tailwindcss()]
-  },
-
-  integrations: [react()]
-});
+  output: 'server',                          // aseguras SSR
+  adapter: node({ mode: 'standalone' }),     // empaqueta deps para Node
+  integrations: [ react() ],
+  vite: { plugins: [tailwindcss()] }
+})

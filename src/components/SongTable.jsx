@@ -20,8 +20,9 @@ export default function SongTable({ songs = [] }) {
         <tbody className="divide-y divide-gray-100 bg-white">
           {songs.map((song) => (
             <tr
-               className="hover:bg-gray-50 cursor-pointer"
+               key={song.id}
   onClick={() => window.location.href = `/music/${song.id}`}
+  className="cursor-pointer hover:bg-gray-50"
             >
                   <td className="whitespace-nowrap px-4 py-4">
   <p className="font-medium text-gray-900">

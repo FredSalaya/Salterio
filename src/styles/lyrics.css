@@ -1,0 +1,142 @@
+
+@font-face {
+    font-family: black-way;
+    src: url('/fonts/black_way/Black\ Way\ -\ Personal\ Use.otf');
+    font-style: bold;
+}
+@font-face {
+    font-family: monofonto;
+    src: url('/fonts/monofonto/monofonto\ rg.otf');
+    font-style: bold;
+}
+@font-face {
+    font-family: typoslab-irregular;
+    src: url('/fonts/typoslab_irregular/TypoSlab\ Irregular\ Demo.otf');
+    font-style: bold;
+}
+
+@font-face {
+  font-family: 'PTmono';
+  src: url('/fonts/PTMono-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Optima';
+  src: url('/fonts/OptimaLTPro-Bold.otf') format('opentype');
+  font-weight: 700;
+}
+
+.note-single{
+    position:float;
+    text-align: center;
+    color:#09A8FA;
+    font-family: 'Optima', sans-serif;
+    font-size: 15px;
+   filter: drop-shadow(0 0px 0px #ccc);
+ }
+
+
+ .invisible {
+  visibility: hidden;
+}
+
+.note{
+  position: relative;
+text-align: center;
+color: hsl(200, 96%, 51%);
+-webkit-filter: drop-shadow(0 0px 0px #ccc);
+filter: drop-shadow(0 0px 0px #ccc);
+line-height: 2;
+ /* position:float;
+  text-align: center;
+  color:hsl(200, 96%, 51%);
+ filter: drop-shadow(0 0px 0px #ccc); */
+}
+
+.note::after {
+  
+  content: attr(data-content);
+  position: absolute;
+  top: -13px;
+  color:#09A8FA;
+  left: 0%;
+  margin-left:attr(data-marginleft);
+  line-height: 1;
+  font-family: 'Optima', sans-serif;
+  font-size: 13px;
+  
+} 
+
+
+
+
+
+  .F{
+    font-size:medium;
+    font-style:bold;
+    color:#09A8FA;
+
+  }
+
+  .verso{
+      padding-left: 45px;
+      font-family: 'PTmono', sans-serif;
+  }
+
+  .titulo{
+    line-height: 3; 
+    font-family: kozGoPro-Bold;
+    color: gray;
+  }
+
+
+
+
+  /*notas cortas*/
+  .note-short{
+    position:float;
+    text-align: center;
+    color:#09A8FA;
+    /*filter: drop-shadow(0 0px 0px #ccc);*/
+ }
+
+  .note-short::before {
+    content: "";
+    position: absolute;
+    /*filter: drop-shadow(0 1px 1px #ccc);*/
+    bottom: 20px;
+    left: 80%;
+    margin-left: -9px;
+    width: 11px;
+    height: 11px;
+    background: white;
+    transform: rotate(45deg);
+  }
+
+  .note-short::after{ 
+    padding:1% 30% 10%;
+    content: attr(data-content);
+    position: fixed;
+    top: -15px;
+    color:#09A8FA;
+    /*filter: drop-shadow(1 1px 5px #ccc);*/
+    left: -1%;
+    margin-left:attr(data-marginleft);/*-1%*/
+    width: auto;
+    height: 13px;
+    background: white;
+    transform: rotate(0deg);
+    border-radius: 5px;
+    text-align: center;
+    line-height: 1;
+    font-size: small;
+    background: #ffffff;
+
+  }
+
+
+
+
+
+
+

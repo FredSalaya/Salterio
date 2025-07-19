@@ -1,48 +1,36 @@
 ---
-export const prerender = false;     // SSR bajo demanda
+// src/pages/music/[id].astro
+export const prerender = false;
 
-import Layout    from '../../layouts/Layout.astro'
-import LyricsViewer  from '../../components/LyricsViewer.jsx'
-import supabase  from '../../lib/supabase'
+import Layout from '../../layouts/Layout.astro'
+import BodyViewer from '../../components/BodyViewer.jsx'
+import supabase from '../../lib/supabase'
+import FancyText from '../../components/FancyText.jsx'
 
-// ---------------- datos ----------------
-const { slug } = Astro.params        // /music/<slug>
+const { id } = Astro.params
 
+/* único fetch — lado servidor */
 const { data: song, error } = await supabase
   .from('cantos')
-  .select(`
-    id,
-    slug,
-    titulo,
-    tono,
-    autor,
-    version,
-    cuerpo,
-    categorias:canto_categoria(categorias(nombre))
-  `)
-  .eq('slug', slug)
+  .select('cuerpo, titulo')
+  .eq('id', id)
   .single()
 
-if (error || !song) {
-  throw new Error('Canto no encontrado')
-}
+if (error || !song) throw new Error('Not found')
 ---
 
 <Layout title={song.titulo}>
-  <!-- LETRA / ACORDES (con tu parser) -->
-  <LyricsViewer raw={song.cuerpo} client:only="react" />
-
-  <!-- Detalles rápidos debajo -->
-  <div class="mt-8 text-sm text-gray-600 space-y-1">
-    <p><strong>Tono:</strong> {song.tono}</p>
-    <p><strong>Autor:</strong> {song.autor}</p>
-    {song.version && <p><strong>Versión:</strong> {song.version}</p>}
-    {song.categorias.length && (
-      <p>
-        <strong>Categorías:</strong>
-        {song.categorias.map(c => c.categorias.nombre).join(', ')}
-      </p>
-    )}
-  </div>
+    <h2 class="text-center my-8">
+    <FancyText
+      text={song.titulo}
+      colors={['#40ffaa', '#4079ff', '#ff40c6']}
+      animationSpeed={4}
+      showBorder
+      className="text-4xl font-extrabold"
+      client:only="react"
+    />
+  </h2>
+<br>
+  <!-- le pasamos solo la letra -->
+  <BodyViewer raw={song.cuerpo} transport={0} client:only="react" />
 </Layout>
-
