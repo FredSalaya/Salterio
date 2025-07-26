@@ -38,7 +38,7 @@ export default function Header() {
             {/* logo solo visible en menú móvil */}
             <li className="mb-6 hidden max-lg:block">
               <a href="/">
-                <img src="/logos/logo_salterio_color.svg" alt="logo" className="w-36" />
+                <img src="/logos/logo_salterio_color.svg" alt="logo" className="w-40" />
               </a>
             </li>
 
