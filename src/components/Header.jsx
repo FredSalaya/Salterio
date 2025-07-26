@@ -13,7 +13,7 @@ export default function Header() {
         </a>
         {/* logo mobile */}
         <a href="/" className="hidden max-sm:block">
-          <img src="/logos/logo_salterio_color.svg" alt="logo" className="w-10" />
+          <img src="/logos/logo_salterio_color.svg" alt="logo" className="w-15" />
         </a>
 
         {/* MENÚ */}
