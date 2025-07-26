@@ -18,6 +18,7 @@ const { data: rows, error } = await supabase
       categoria:categorias(nombre)
     )
   `)
+  .order('titulo', { ascending: true })  
 
 if (error) throw error
 
@@ -43,10 +44,7 @@ const data = rows.map(r => ({
       client:only="react"
     />
   </h2>
-<br>
   <SongTable songs={data} client:only="react" />
-
-  <br><br><br><br><br><br>
 </Layout>
 
 
