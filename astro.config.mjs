@@ -8,8 +8,8 @@ import VitePWA from '@vite-pwa/astro'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  output: 'server',                          // aseguras SSR
-  adapter: node({ mode: 'standalone' }),     // empaqueta deps para Node
+  output: 'server',                          
+  adapter: node({ mode: 'standalone' }),    
   integrations: [
     react(),
     VitePWA({
