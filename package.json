@@ -16,6 +16,7 @@
     "@tailwindcss/vite": "^4.1.11",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
+    "@vite-pwa/astro": "^1.1.0",
     "astro": "^5.10.1",
     "gsap": "^3.13.0",
     "motion": "^12.19.1",
