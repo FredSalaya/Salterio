@@ -1,17 +1,17 @@
 
 @font-face {
     font-family: black-way;
-    src: url('/fonts/black_way/Black\ Way\ -\ Personal\ Use.otf');
+    src: url('/fonts/Black Way - Personal Use.otf');
     font-style: bold;
 }
 @font-face {
     font-family: monofonto;
-    src: url('/fonts/monofonto/monofonto\ rg.otf');
+    src: url('/fonts/monofonto rg.otf');
     font-style: bold;
 }
 @font-face {
     font-family: typoslab-irregular;
-    src: url('/fonts/typoslab_irregular/TypoSlab\ Irregular\ Demo.otf');
+    src: url('/fonts/TypoSlab Irregular Demo.otf');
     font-style: bold;
 }
 
