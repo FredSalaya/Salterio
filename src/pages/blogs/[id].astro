@@ -1,0 +1,45 @@
+---
+export const prerender = false;
+
+import Layout from '../../layouts/Layout.astro'
+import supabase from '../../lib/supabase'
+
+import BlogDetail from '../../components/BlogDetail.jsx' // Componente para mostrar detalles del blog
+
+const { id } = Astro.params
+
+// Traemos el blog por el id
+const { data: blog, error } = await supabase
+  .from('blogs')
+  .select(`
+    id,
+    titulo,
+    cuerpo_md,
+    resumen,
+    cover_img,
+    fecha_publicacion,
+    podcast_url,
+    video_url,
+    autor:autor_id (
+      nombre,
+      apodo,
+      foto_url
+    )
+  `)
+  .eq('id', id) // Usamos id para URLs amigables
+  .single()
+
+if (error || !blog) throw new Error('Not found')
+---
+
+<Layout title={blog.titulo}>
+  <div class="max-w-2xl mx-auto py-10">
+    <h1 class="text-4xl font-bold mb-2">{blog.titulo}</h1>
+    <div class="text-gray-500 mb-4">{blog.fecha_publicacion?.slice(0, 10)}</div>
+    <img src={blog.cover_img || '/img/no-image.png'} alt={blog.titulo} class="w-full aspect-video object-cover mb-6 rounded-xl"/>
+   
+      <BlogDetail cuerpo_md={blog.cuerpo_md} client:only="react" />
+  
+    <!-- Puedes mostrar aquí autor, podcast, video, etc -->
+  </div>
+</Layout>
