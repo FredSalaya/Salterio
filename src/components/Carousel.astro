@@ -11,9 +11,10 @@ const { ads, interval = 5000 } = Astro.props as Props
 
 <!-- Carousel container with fixed aspect ratio 1383x512 -->
 <div
-  class="relative overflow-hidden w-full  
-         aspect-[3/2]      /* 3:2 en móvil (más alto) */  
-         md:aspect-video   /* 16:9 en tablet */  
+  data-interval={interval}
+  class="relative overflow-hidden w-full
+         aspect-[3/2]      /* 3:2 en móvil (más alto) */
+         md:aspect-video   /* 16:9 en tablet */
          lg:aspect-[1383/512] /* 2.7:1 en desktop */"
 >
   <!-- Slides container -->
