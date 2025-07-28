@@ -19,8 +19,8 @@ export default function BodyViewer({ raw = '', transport = 0 }) {
   }, [raw, delta]);
 
   // justo antes del return
-console.log('RAW length:', raw?.length)      // ¿llega texto?
-console.log('HTML preview:', html.slice(0,200)) // primeros 2
+  // console.log('RAW length:', raw?.length)      // ¿llega texto?
+  // console.log('HTML preview:', html.slice(0,200)) // primeros 2
 
   return (
     <>
