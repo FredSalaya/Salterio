@@ -1,15 +1,10 @@
-// tailwind.config.cjs
-const withMT = require("@material-tailwind/react/utils/withMT")
-module.exports = withMT({
+module.exports = {
   content: [
-    "./src/**/*.{astro,html,js,jsx,ts,tsx}",
-    "./src/components/ReactBits/**/*.{js,jsx,ts,tsx}", // <- NEW
-    "./node_modules/@material-tailwind/react/components/**/*.{js,jsx,ts,tsx}",
-    "./node_modules/@material-tailwind/react/theme/**/*.{js,jsx,ts,tsx}",
+    "./src/**/*.{astro,html,js,jsx,ts,tsx,md,mdx}",
   ],
   plugins: [
     require("@tailwindcss/aspect-ratio"),
     require("@tailwindcss/typography"),
-    require("tailwindcss-animate"), // por si el Bit lo pide
+    require("tailwindcss-animate"),
   ],
-})
+}

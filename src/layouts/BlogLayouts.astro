@@ -6,9 +6,10 @@ export interface Props {
 }
 const { title } = Astro.props as Props
 
-import '../styles/global.css'
 import Header from '../components/Header.jsx'
 import Footer from '../components/Footer.astro'
+import '../styles/global.css'
+
 ---
 
 <!DOCTYPE html>
@@ -22,11 +23,11 @@ import Footer from '../components/Footer.astro'
   </head>
   <body class="bg-gray-50 text-gray-800">
     <Header client:load/>
-    <main>
-       
+
+    <main class="py-4 px-4">   
       <slot />    <!-- aquí entra TODO lo de la página -->
     </main>
+    
     <Footer />
   </body>
 </html>
-

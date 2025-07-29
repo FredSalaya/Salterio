@@ -2,9 +2,12 @@
 export const prerender = false;
 
 import Layout from '../../layouts/BlogLayouts.astro'
+
 import supabase from '../../lib/supabase'
 
 import BlogDetail from '../../components/BlogDetail.jsx' // Componente para mostrar detalles del blog
+
+import FancyText from '../../components/FancyText.jsx'
 
 const { id } = Astro.params
 
@@ -33,13 +36,40 @@ if (error || !blog) throw new Error('Not found')
 ---
 
 <Layout title={blog.titulo}>
-  <div class="max-w-2xl mx-auto py-10">
-    <h1 class="text-4xl font-bold mb-2">{blog.titulo}</h1>
-    <div class="text-gray-500 mb-4">{blog.fecha_publicacion?.slice(0, 10)}</div>
-    <img src={blog.cover_img || '/img/no-image.png'} alt={blog.titulo} class="w-full aspect-video object-cover mb-6 rounded-xl"/>
-   
-      <BlogDetail cuerpo_md={blog.cuerpo_md} client:only="react" />
-  
-    <!-- Puedes mostrar aquí autor, podcast, video, etc -->
+  <div class="flex justify-center w-full min-h-screen py-10">
+    <div class="max-w-2xl w-full">
+         <h1 class="text-center my-8">
+    <FancyText
+      text={blog.titulo}
+      colors={['#1A2A80', '#4079ff', '#7A85C1']}
+      animationSpeed={50} 
+      showBorder
+      className="text-4xl font-extrabold"
+      client:only="react"
+    />
+  </h1>
+   <br>
+<article class="group">
+  <img
+    src={blog.cover_img || '/img/no-image.png'} alt={blog.titulo} 
+    class="h-80 w-full rounded-xl object-cover shadow-xl transition group-hover:grayscale-[50%]"
+  />
+
+   <div class="p-4">
+
+    <p class="mt-2 line-clamp-3 text-sm/relaxed text-gray-500 dark:text-gray-400">
+    {blog.fecha_publicacion?.slice(0, 10)}
+    </p>
+  </div>
+
+
+</article>
+     
+     
+      <div class="prose prose-lg md:prose-xl mx-auto w-ful ">
+        <BlogDetail cuerpo_md={blog.cuerpo_md} client:only="react" />
+      </div>
+      <!-- Aquí autor, podcast, etc -->
+    </div>
   </div>
 </Layout>

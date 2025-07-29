@@ -1,10 +1,13 @@
 ---
-
-title: "🌿 Entre bits y cafecitos: Mi vida indie como dev"
-
+layout: ../../layouts/BlogLayouts.astro
+title: "Mi primer blog"
+date: "2024-11-15"
+description: "Una introducción al uso de Astro"
 ---
 
 <div class="prose">
+
+[toc]
 
 ## 🌱 ¿Qué es ser un dev indie?
 

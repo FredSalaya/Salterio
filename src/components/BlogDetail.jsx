@@ -3,11 +3,11 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
 import remarkToc from 'remark-toc'
-import 'highlight.js/styles/github.css'
+//import 'highlight.js/styles/github.css'
 
 export default function BlogDetail({ cuerpo_md }) {
   return (
-    <div className="prose prose-lg md:prose-xl mx-auto">
+    <div className=" prose-lg md:prose-xl mx-auto">
       <ReactMarkdown
         children={cuerpo_md}
         remarkPlugins={[
@@ -16,6 +16,6 @@ export default function BlogDetail({ cuerpo_md }) {
         ]}
         rehypePlugins={[rehypeHighlight]}
       />
-    </div>
+      </div>
   )
 }

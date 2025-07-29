@@ -1,8 +1,10 @@
-@import "tailwindcss";
+/* The integration's default injected base.css file @import "tailwindcss"; */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+
+/*
 @layer components{
   .transport-btn{
     @apply w-12 h-12 rounded-full bg-sky-600/90 text-white text-2xl
@@ -11,3 +13,4 @@
            focus:outline-none focus:ring-2 focus:ring-sky-400;
   }
 }
+*/
