@@ -1,30 +1,28 @@
-# ── Stage 1: builder ─────────────────────────
+# ── Stage 1: build ───────────────────────────
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-# 1. instala todo (prod + dev)
+# Instala deps y compila
 COPY package*.json ./
 RUN npm ci
-
-# 2. build de Astro (genera dist/)
 COPY . .
 RUN npm run build
 
-# ── Stage 2: runner ──────────────────────────
-FROM node:18-alpine AS runner
-WORKDIR /app
+# ── Stage 2: run ─────────────────────────────
+FROM node:20-alpine AS runner
 ENV NODE_ENV=production
-ENV PORT=3000
 ENV HOST=0.0.0.0
+ENV PORT=3000
 
-# 3. instala solo prod deps (ahora sí server-destroy estará porque lo pusiste en dependencies)
-COPY package*.json ./
-RUN npm ci --production
+# Trabajamos dentro de dist porque ahí vive el package.json del adapter
+WORKDIR /app/dist
 
-# 4. trae el build completo
-COPY --from=builder /app/dist ./dist
+# Copiamos el build completo (incluye package.json de dist)
+COPY --from=builder /app/dist ./
+
+# Instala solo prod deps del package.json de dist
+RUN npm ci --omit=dev
 
 EXPOSE 3000
+CMD ["node", "server/entry.mjs"]
 
-# 5. arranca tu entrypoint de Astro SSR
-CMD ["node", "dist/server/entry.mjs"]
