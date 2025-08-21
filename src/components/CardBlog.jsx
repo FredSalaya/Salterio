@@ -1,6 +1,6 @@
 // src/components/BlogCard.jsx
 // src/components/BlogCard.jsx
-import { FaHeadphones, FaYoutube } from "react-icons/fa";
+import { FaHeadphones, FaYoutube, FaSpotify } from "react-icons/fa";
 
 export default function BlogCard({
   titulo,
@@ -58,16 +58,16 @@ export default function BlogCard({
         {podcast_url && (
         <a
           href={podcast_url}
-          className="m-2 flex items-center gap-1 px-4 py-2 rounded-full bg-pink-50 text-pink-600 font-bold text-sm hover:bg-pink-100 transition"
+          className="m-2 flex items-center gap-1 px-4 py-2 rounded-full bg-green-50 text-green-700 font-bold text-sm hover:bg-green-100 transition"
           target="_blank"
         >
-          <FaHeadphones className="inline" />
+          <FaSpotify className="inline" />
         </a>
       )}
       {video_url && (
         <a
           href={video_url}
-          className="m-2 flex items-center gap-1 px-4 py-2 rounded-full bg-blue-50 text-blue-700 font-bold text-sm hover:bg-blue-100 transition"
+          className="m-2 flex items-center gap-1 px-4 py-2 rounded-full bg-pink-50 text-pink-600 font-bold text-sm hover:bg-pink-100 transition"
           target="_blank"
         >
           <FaYoutube className="inline" /> 

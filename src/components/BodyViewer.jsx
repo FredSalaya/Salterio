@@ -4,6 +4,7 @@ import transposeBody from '../utils/transposeBody'
 import parseLyrics   from '../utils/legacyParser'
 import TransportControls from './TransportControls'
 
+
 /**
  * props:
  *   raw        : string  ← letra con {acordes}
@@ -25,7 +26,7 @@ export default function BodyViewer({ raw = '', transport = 0 }) {
   return (
     <>
       <div
-        className="mx-auto max-w-prose px-4 py-6 space-y-6"
+        className="mx-auto max-w-prose px-4 py-6 space-y-6 "
         dangerouslySetInnerHTML={{ __html: html }}
       />
 

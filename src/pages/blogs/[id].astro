@@ -2,74 +2,177 @@
 export const prerender = false;
 
 import Layout from '../../layouts/BlogLayouts.astro'
-
 import supabase from '../../lib/supabase'
-
-import BlogDetail from '../../components/BlogDetail.jsx' // Componente para mostrar detalles del blog
-
+import BlogDetail from '../../components/BlogDetail.jsx'
 import FancyText from '../../components/FancyText.jsx'
+import { FaHeadphones, FaYoutube, FaSpotify } from 'react-icons/fa'
 
 const { id } = Astro.params
 
-// Traemos el blog por el id
+// sacamos el blog
 const { data: blog, error } = await supabase
   .from('blogs')
   .select(`
-    id,
-    titulo,
-    cuerpo_md,
-    resumen,
-    cover_img,
-    fecha_publicacion,
-    podcast_url,
-    video_url,
-    autor:autor_id (
-      nombre,
-      apodo,
-      foto_url
-    )
+    id, titulo, cuerpo_md, resumen, cover_img, fecha_publicacion,
+    podcast_url, video_url,
+    tipo_blog:tipo_blog ( 
+      tipo
+    ),
+    autor:autor_id ( nombre, apodo, foto_url, correo )
   `)
-  .eq('id', id) // Usamos id para URLs amigables
+  .eq('id', id)
   .single()
 
 if (error || !blog) throw new Error('Not found')
----
 
+// helpers p/ convertir a embed
+const spotifyEmbed = blog.podcast_url
+  ? blog.podcast_url.replace('open.spotify.com/', 'open.spotify.com/embed/')
+  : null
+
+const ytEmbed = blog.video_url
+  ? blog.video_url
+      .replace('watch?v=', 'embed/')
+      .replace('youtu.be/', 'www.youtube.com/embed/')
+  : null
+---
 <Layout title={blog.titulo}>
   <div class="flex justify-center w-full min-h-screen py-10">
     <div class="max-w-2xl w-full">
-         <h1 class="text-center my-8">
-    <FancyText
-      text={blog.titulo}
-      colors={['#1A2A80', '#4079ff', '#7A85C1']}
-      animationSpeed={50} 
-      showBorder
-      className="text-4xl font-extrabold"
-      client:only="react"
-    />
-  </h1>
-   <br>
-<article class="group">
-  <img
-    src={blog.cover_img || '/img/no-image.png'} alt={blog.titulo} 
-    class="h-80 w-full rounded-xl object-cover shadow-xl transition group-hover:grayscale-[50%]"
-  />
+      <!-- Título fancy -->
+      <h1 class="text-center my-8">
+        <FancyText
+          text={blog.titulo}
+          colors={['#1A2A80', '#4079ff', '#7A85C1']}
+          animationSpeed={50}
+          showBorder
+          className="text-4xl font-extrabold"
+          client:only="react"
+        />
+      </h1>
 
-   <div class="p-4">
+      <!-- Portada -->
+      <article class="group">
+        <img
+          src={blog.cover_img || '/img/no-image.png'}
+          alt={blog.titulo}
+          class="h-80 w-full rounded-xl object-cover shadow-xl transition group-hover:grayscale-[50%]"
+        />
+        <div class="p-4">
+          <p class="mt-2 line-clamp-3 text-sm/relaxed text-gray-500 dark:text-gray-400">
+            {blog.fecha_publicacion?.slice(0, 10)}
+          </p>
+          <!--autor -->
+            <div class="sticky inset-x-0 bottom-0 border-t border-gray-100">
+    <a href="#" class="flex items-center gap-2  p-4 hover:bg-gray-50">
+      <img
+        alt=""
+        src={blog.autor?.foto_url || '/img/no-image.png'}
+        class="size-10 rounded-full object-cover"
+      />
 
-    <p class="mt-2 line-clamp-3 text-sm/relaxed text-gray-500 dark:text-gray-400">
-    {blog.fecha_publicacion?.slice(0, 10)}
-    </p>
+      <div>
+        <p class="text-xs">
+          <strong class="block font-medium">{blog.autor?.nombre}</strong>
+
+          <span>{blog.autor?.correo}</span>
+        </p>
+      </div>
+    </a>
   </div>
+  <!-- autor -->
+                  <!-- Spotify & youtube -->
+{(blog.podcast_url || blog.video_url) && (
+  <div class="flex text-center justify-center mt-6 gap-4">
+    {/* Spotify / podcast */}
+    {blog.podcast_url && (
+      <a
+        href={blog.podcast_url}
+        class="flex items-center text-center gap-2 px-4 py-2 rounded-full bg-green-50 text-green-700 
+                   hover:bg-green-100 font-bold text-sm transition"
+        target="_blank" rel="noopener"
+      >
+        <FaSpotify size={18} class="inline" />
+        <span>Escucha el Podcast</span>
+      </a>
+    )}
 
+    {/* YouTube */}
+    {blog.video_url && (
+      <a
+        href={blog.video_url}
+        class="flex items-center text-center gap-2 px-4 py-2 rounded-full bg-red-50 text-red-600 
+                   hover:bg-red-100 font-bold text-sm transition"
+        target="_blank" rel="noopener"
+      >
+        <FaYoutube size={18} class="inline" />
+        <span>Ver video</span>
+      </a>
+    )}
+  </div>
+)}
+<!-- Spotify & youtube  -->
+        </div>
+        
+    </article>
 
-</article>
-     
-     
-      <div class="prose prose-lg md:prose-xl mx-auto w-ful ">
+      <!-- Cuerpo del post -->
+      <div class="prose prose-lg md:prose-xl mx-auto">
         <BlogDetail cuerpo_md={blog.cuerpo_md} client:only="react" />
       </div>
-      <!-- Aquí autor, podcast, etc -->
+
+      <!-- Podcast / Video -->
+      {(spotifyEmbed || ytEmbed) && (
+        <section class="my-10 space-y-8">
+          {spotifyEmbed && (
+            <div class="justify-center mt-6 gap-4">
+              <a
+        href={blog.podcast_url}
+        class="flex items-center gap-2 px-4 py-2 rounded-full bg-green-50 text-green-700 
+                   hover:bg-green-100 font-bold text-sm transition"
+        target="_blank" rel="noopener"
+      >
+        <FaHeadphones size={18} class="inline" />
+        <span>Escucha el Podcast</span>
+      </a>
+              <!-- Embed Spotify -->
+              <div class="mx-auto max-w-xl">
+                <iframe
+                  src={`${spotifyEmbed}?utm_source=generator`}
+                  class="w-full h-[232px] rounded-xl border-0"
+                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                  loading="lazy" />
+              </div>
+            </div>
+          )}
+
+          {ytEmbed && (
+            <div class="justify-center mt-6 gap-4 items-center">
+               <a
+        href={blog.video_url}
+        class="flex items-center gap-2 px-4 py-2 rounded-full bg-red-50 text-red-600 
+                   hover:bg-red-100 font-bold text-sm transition"
+        target="_blank" rel="noopener"
+      >
+        <FaYoutube size={18} class="inline" />
+        <span>Ver video</span>
+      </a>
+
+              <!-- Embed YouTube -->
+              <div class="relative mx-auto w-full" style="padding-bottom:56.25%;">
+                <iframe
+                  src={ytEmbed}
+                  class="absolute top-0 left-0 w-full h-full rounded-xl"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                  loading="lazy" />
+              </div>
+
+            </div>
+          )}
+        </section>
+      )}
+      <!-- Autor -->
     </div>
   </div>
 </Layout>

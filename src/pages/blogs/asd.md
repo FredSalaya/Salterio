@@ -18,6 +18,13 @@ Para mí, es tomar decisiones pequeñas que tienen impacto grande: como decirle 
 
 ## 💡 De startup a slow dev
 
+ <img
+    alt=""
+    src="https://i.postimg.cc/NjJ2XQb6/20250809-1052-Holographic-AI-Genomics-simple-compose-01k27vw4gpfzt809rswdb40m8e-1024x683.webp"
+    class="h-60 w-full rounded-tr-3xl rounded-bl-3xl object-cover sm:h-64 lg:h-80"
+  />
+
+
 Un día me cansé de la "cultura del hustle". Dejé mi trabajo y comencé a hacer cosas que me daban alegría:  
 - Hice una app para llevar el control de mis plantas  
 - Escribí un bot que me recordara beber agua  

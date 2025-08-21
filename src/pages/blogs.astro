@@ -15,6 +15,9 @@ const { data: blogs, error } = await supabase
     fecha_publicacion,
     podcast_url,
     video_url,
+    tipo_blog:tipo_blog ( 
+      tipo
+    ),
     autor:autor_id (
       nombre,
       apodo,
@@ -28,11 +31,12 @@ if (error) throw error
 <Layout title="Blogs">
   <h1 class="text-3xl font-bold my-8 text-center">Blogs</h1>
   
-  <div class="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+  <div class="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 px-4 shadow-xl">
     {
       blogs.map(blog => (
         <BlogCard
           titulo={blog.titulo}
+          tipo_blog={blog.tipo_blog?.tipo}
           resumen={blog.resumen}
           fecha={blog.fecha_publicacion}
           imagen_url={blog.cover_img}

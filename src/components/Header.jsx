@@ -15,6 +15,7 @@ export default function Header() {
         <a href="/" className="hidden max-sm:block">
           <img src="/logos/logo_salterio_color.svg" alt="logo" className="w-15" />
         </a>
+        
 
         {/* MENÚ */}
         <div
@@ -53,11 +54,11 @@ export default function Header() {
             </li>
             <li className="max-lg:border-b max-lg:border-gray-300 max-lg:py-3 px-3">
               <a
-                href="/ministerios"
+                href="/blogs"
                 onClick={() => setOpen(false)}
                 className="font-medium lg:hover:text-blue-700 text-slate-900 block text-[15px]"
               >
-                Ministerios
+                Devocionales
               </a>
             </li>
             <li className="max-lg:border-b max-lg:border-gray-300 max-lg:py-3 px-3">
