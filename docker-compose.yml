@@ -1,0 +1,31 @@
+services:
+  builder:
+    image: node:20-alpine
+    working_dir: /src
+    volumes:
+      - ./:/src                        # tu código
+      - dist:/src/dist                 # artefactos de build
+      - npm-cache:/root/.npm           # cache npm
+    command: sh -c "npm ci && npm run build"
+
+  web:
+    image: node:20-alpine
+    working_dir: /app
+    env_file:
+      - .env                           # si necesitas variables en runtime
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    volumes:
+      - dist:/app/dist                 # usa el build del volumen
+      - npm-cache:/root/.npm           # acelera 'npm ci' en dist
+    command: sh -c "cd dist && npm ci --omit=dev && node server/entry.mjs"
+    depends_on:
+      - builder
+
+volumes:
+  dist:
+  npm-cache:
