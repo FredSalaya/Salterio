@@ -1,7 +1,8 @@
 ---
 // /src/pages/blogs.astro
 import Layout from "../layouts/Layout.astro";
-import BlogCard from "../components/CardBlog.jsx"; // Renombrado para claridad
+import BlogGrid from "../components/BlogGrid.jsx";
+import FancyText from "../components/FancyText.jsx";
 import SplashScreen from "../components/SplashScreen.jsx";
 import supabase from "../lib/supabase";
 
@@ -34,32 +35,27 @@ if (error) throw error;
 
 <Layout title="Blogs">
   <SplashScreen client:only="react" storageKey="visited-blogs" />
-  <h1 class="text-3xl font-bold my-8 text-center">Blogs</h1>
 
-  <div
-    class="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 px-4 shadow-xl"
-  >
-    {
-      blogs.map((blog) => (
-        <BlogCard
-          titulo={blog.titulo}
-          tipo_blog={blog.tipo_blog?.tipo}
-          resumen={blog.resumen}
-          fecha={blog.fecha_publicacion}
-          imagen_url={blog.cover_img}
-          blog_url={`/blogs/${blog.id}`}
-          podcast_url={blog.podcast_url}
-          video_url={blog.video_url}
-          autor_nombre={
-            blog.autor?.apodo
-              ? `${blog.autor.apodo} ${blog.autor.nombre}`
-              : blog.autor?.nombre
-          }
-          autor_foto={blog.autor?.foto_url}
+  <div class="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      {/* Header Section */}
+      <div class="text-center mb-16">
+        <FancyText
+          text="Nuestros Blogs"
+          colors={["#3b82f6", "#10b981", "#3b82f6"]}
+          animationSpeed={6}
+          showBorder={false}
+          className="text-5xl md:text-6xl font-extrabold tracking-tight mb-6"
           client:only="react"
         />
-      ))
-    }
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          Descubre reflexiones, enseñanzas y recursos para tu crecimiento
+          espiritual.
+        </p>
+      </div>
+
+      {/* Interactive Grid */}
+      <BlogGrid blogs={blogs} client:only="react" />
+    </div>
   </div>
-  <br />
 </Layout>
