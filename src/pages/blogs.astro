@@ -1,13 +1,15 @@
 ---
 // /src/pages/blogs.astro
-import Layout from '../layouts/Layout.astro'
-import BlogCard from '../components/CardBlog.jsx' // Renombrado para claridad
-import supabase from '../lib/supabase'
+import Layout from "../layouts/Layout.astro";
+import BlogCard from "../components/CardBlog.jsx"; // Renombrado para claridad
+import SplashScreen from "../components/SplashScreen.jsx";
+import supabase from "../lib/supabase";
 
 // Cargar blogs (solo info básica para las cards)
 const { data: blogs, error } = await supabase
-  .from('blogs')
-  .select(`
+  .from("blogs")
+  .select(
+    `
     id,
     titulo,
     resumen,
@@ -23,17 +25,22 @@ const { data: blogs, error } = await supabase
       apodo,
       foto_url
     )
-  `)
-  .order('fecha_publicacion', { ascending: false })
+  `,
+  )
+  .order("fecha_publicacion", { ascending: false });
 
-if (error) throw error
+if (error) throw error;
 ---
+
 <Layout title="Blogs">
+  <SplashScreen client:only="react" storageKey="visited-blogs" />
   <h1 class="text-3xl font-bold my-8 text-center">Blogs</h1>
-  
-  <div class="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 px-4 shadow-xl">
+
+  <div
+    class="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 px-4 shadow-xl"
+  >
     {
-      blogs.map(blog => (
+      blogs.map((blog) => (
         <BlogCard
           titulo={blog.titulo}
           tipo_blog={blog.tipo_blog?.tipo}
@@ -43,15 +50,16 @@ if (error) throw error
           blog_url={`/blogs/${blog.id}`}
           podcast_url={blog.podcast_url}
           video_url={blog.video_url}
-          autor_nombre={blog.autor?.apodo ? `${blog.autor.apodo} ${blog.autor.nombre}` : blog.autor?.nombre}
+          autor_nombre={
+            blog.autor?.apodo
+              ? `${blog.autor.apodo} ${blog.autor.nombre}`
+              : blog.autor?.nombre
+          }
           autor_foto={blog.autor?.foto_url}
           client:only="react"
         />
       ))
     }
   </div>
-  <br>
-
+  <br />
 </Layout>
-
-

@@ -1,64 +1,54 @@
 ---
-import Layout from '../layouts/Layout.astro'
-import Carousel from '../components/Carousel.astro'
-import Card from '../components/Card.astro'
-import CardBits from '../components/CardBits.jsx'
+import Layout from "../layouts/Layout.astro";
+import Carousel from "../components/Carousel.astro";
+import Card from "../components/Card.astro";
+import CardBits from "../components/CardBits.jsx";
+import SplashScreen from "../components/SplashScreen.jsx";
 
 //Aquí se declaran los anuncios del carrusel
 const ads = [
-  { href: 'blogs', image: '../banners/1.png', alt: 'Promo 1' },
-  { href: '#', image: '../banners/2.svg', alt: 'Promo 2' },
-  { href: '#', image: '../banners/3.png', alt: 'Promo 2' }
+  { href: "blogs", image: "../banners/1.png", alt: "Promo 1" },
+  { href: "#", image: "../banners/2.svg", alt: "Promo 2" },
+  { href: "#", image: "../banners/3.png", alt: "Promo 2" },
   // …
-]
+];
 ---
 
 <Layout>
-	
-  
+  <SplashScreen client:only="react" storageKey="visited-index" />
 
-    <div class="-mx-6">
+  <div class="-mx-6">
     <Carousel ads={ads} interval={5000} />
   </div>
 
-<div
-  class="
-    p-6  text-center       
-  "
->
+  <div class="p-6 text-center">
     <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-6">
+      <Card
+        href="music"
+        subtitle="Music"
+        title="Coros y Cantos"
+        body="Aprende a cantar y tocar música"
+        imgSrc="/images/abba3.png"
+        imgAlt="Imagen de ejemplo"
+      />
 
       <Card
-      href="music"
-      subtitle="Music"
-      title="Coros y Cantos"
-      body="Aprende a cantar y tocar música"
-      imgSrc="/images/abba3.png"
-      imgAlt="Imagen de ejemplo"
-    />
+        href="blogs"
+        subtitle="Reflexiones"
+        title="Devocionales"
+        body="¿Buscas la palabra de Dios? Revisa aquí nuestras devocionales"
+        imgSrc="/images/predicacion.png"
+        imgAlt="Imagen de ejemplo"
+      />
 
-  <Card
-  href="blogs"
-  subtitle="Reflexiones"
-  title="Devocionales"
-  body="¿Buscas la palabra de Dios? Revisa aquí nuestras devocionales"
-  imgSrc="/images/predicacion.png"
-  imgAlt="Imagen de ejemplo"
-/>
-
-
-    <Card
-    href="#"
-    subtitle="Club de niños"
-    title="Infantiles"
-    body="Mira las actividades de los niños"
-    imgSrc="/images/ninos2.png"
-    imgAlt="Imagen de ejemplo"
-  />
-
-
-
+      <Card
+        href="#"
+        subtitle="Club de niños"
+        title="Infantiles"
+        body="Mira las actividades de los niños"
+        imgSrc="/images/ninos2.png"
+        imgAlt="Imagen de ejemplo"
+      />
     </div>
-	</div>
-
+  </div>
 </Layout>

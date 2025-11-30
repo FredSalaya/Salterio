@@ -3,6 +3,7 @@
 import Layout from "../layouts/Layout.astro";
 import SongTable from "../components/SongTable.jsx";
 import FancyText from "../components/FancyText.jsx";
+import SplashScreen from "../components/SplashScreen.jsx";
 import supabase from "../lib/supabase";
 
 // 📥 consulta
@@ -36,6 +37,7 @@ const data = rows.map((r) => ({
 ---
 
 <Layout title="Lista de Canciones">
+  <SplashScreen client:only="react" storageKey="visited-music" />
   <div class="min-h-screen bg-gradient-to-b from-gray-50 to-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div class="text-center mb-12">
