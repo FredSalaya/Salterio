@@ -3,22 +3,23 @@ import { defineConfig } from 'astro/config'
 
 import tailwind from '@astrojs/tailwind';
 import react from '@astrojs/react'
-import node  from '@astrojs/node'
+import node from '@astrojs/node'
 import VitePWA from '@vite-pwa/astro'
 
 
 export default defineConfig({
-  output: 'server',                          
-  adapter: node({ mode: 'standalone' }),    
+  site: 'https://salterio.site',
+  output: 'server',
+  adapter: node({ mode: 'standalone' }),
   integrations: [
     tailwind(),
     react(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: [
-        'favicon.svg', 
-        'favicon.ico', 
-        'robots.txt', 
+        'favicon.svg',
+        'favicon.ico',
+        'robots.txt',
         'apple-touch-icon.png'
       ],
       manifest: {
