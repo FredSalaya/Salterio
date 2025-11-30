@@ -1,14 +1,15 @@
 ---
 // src/pages/music.astro
-import Layout from '../layouts/Layout.astro'
-import SongTable from '../components/SongTable.jsx'
-import FancyText from '../components/FancyText.jsx'
-import supabase from '../lib/supabase'
+import Layout from "../layouts/Layout.astro";
+import SongTable from "../components/SongTable.jsx";
+import FancyText from "../components/FancyText.jsx";
+import supabase from "../lib/supabase";
 
 // 📥 consulta
 const { data: rows, error } = await supabase
-  .from('cantos')
-  .select(`
+  .from("cantos")
+  .select(
+    `
     id,
     titulo,
     tono,
@@ -17,34 +18,42 @@ const { data: rows, error } = await supabase
     categorias:canto_categoria(
       categoria:categorias(nombre)
     )
-  `)
-  .order('titulo', { ascending: true })  
+  `,
+  )
+  .order("titulo", { ascending: true });
 
-if (error) throw error
+if (error) throw error;
 
 // 🔄 adapta al shape que espera SongTable
-const data = rows.map(r => ({
+const data = rows.map((r) => ({
   id: r.id,
   title: r.titulo,
   version: r.version,
   key: r.tono,
   author: r.autor,
-  categories: r.categorias.map(c => c.categoria.nombre)
-}))
+  categories: r.categorias.map((c) => c.categoria.nombre),
+}));
 ---
 
 <Layout title="Lista de Canciones">
-  <h2 class="text-center my-8">
-    <FancyText
-      text="Lista de Canciones"
-      colors={['#40ffaa', '#4079ff', '#ff40c6']}
-      animationSpeed={4}
-      showBorder
-      className="text-4xl font-extrabold"
-      client:only="react"
-    />
-  </h2>
-  <SongTable songs={data} client:only="react" />
+  <div class="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="text-center mb-12">
+        <FancyText
+          text="Lista de Canciones"
+          colors={["#3b82f6", "#8b5cf6", "#ec4899"]}
+          animationSpeed={6}
+          showBorder={false}
+          className="text-5xl md:text-6xl font-extrabold tracking-tight mb-4"
+          client:only="react"
+        />
+        <p class="text-gray-500 text-lg max-w-2xl mx-auto mt-4">
+          Explora nuestra colección de cantos, himnos y alabanzas. Usa el
+          buscador o filtra por categorías para encontrar lo que necesitas.
+        </p>
+      </div>
+
+      <SongTable songs={data} client:only="react" />
+    </div>
+  </div>
 </Layout>
-
-
