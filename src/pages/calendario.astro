@@ -1,0 +1,83 @@
+---
+import Layout from "../layouts/Layout.astro";
+import fs from "node:fs";
+import path from "node:path";
+import CalendarApp from "../components/CalendarApp";
+
+// Define types for our data
+interface Activity {
+  mes: string;
+  semana: string;
+  dia: string;
+  horario: string;
+  actividad: string;
+  categoria: string;
+  metaDetalle: string;
+}
+
+// Read and parse CSV
+const csvPath = path.resolve("./src/excel/calendario.csv");
+const fileContent = fs.readFileSync(csvPath, "utf-8");
+const rows = fileContent.split("\n").filter((row) => row.trim() !== "");
+// Skip header
+const dataRows = rows.slice(1);
+
+const data: Activity[] = dataRows.map((row) => {
+  const columns = row.split(",");
+  return {
+    mes: columns[0]?.trim() || "",
+    semana: columns[1]?.trim() || "",
+    dia: columns[2]?.trim() || "",
+    horario: columns[3]?.trim() || "",
+    actividad: columns[4]?.trim() || "",
+    categoria: columns[5]?.trim() || "",
+    metaDetalle: columns[6]?.trim() || "",
+  };
+});
+
+const title = "Agenda Salterio 2025";
+---
+
+<Layout title={title}>
+  <div class="min-h-screen bg-[#FDFCFD] pb-12">
+    <!-- Hero Section -->
+    <div class="relative bg-slate-900 text-white py-12 mb-8 overflow-hidden">
+      <div
+        class="absolute inset-0 opacity-10"
+        style="background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 24px 24px;"
+      >
+      </div>
+      <div
+        class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6 z-10"
+      >
+        <div>
+          <h1
+            class="text-4xl md:text-5xl font-black tracking-tight mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-emerald-200"
+          >
+            Agenda 2025
+          </h1>
+          <p class="text-slate-300 font-light text-lg">
+            Gestión centralizada de actividades ministeriales.
+          </p>
+        </div>
+
+        {/* Legend / Stats (Optional) */}
+        <div class="hidden md:flex gap-4">
+          <div
+            class="px-4 py-2 bg-white/10 rounded-lg backdrop-blur-sm border border-white/10"
+          >
+            <span class="block text-2xl font-bold">{data.length}</span>
+            <span class="text-xs text-slate-400 uppercase tracking-wider"
+              >Actividades</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive Calendar App -->
+    <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+      <CalendarApp client:load data={data} />
+    </div>
+  </div>
+</Layout>
