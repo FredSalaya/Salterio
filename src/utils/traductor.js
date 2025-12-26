@@ -48,29 +48,24 @@ export const traducirAcordes = (txt) =>
   txt.replace(
     ACORDE_RE,
     (_, ac, bajo, spc, resto) => {
-      // Intentamos extraer la sílaba del texto siguiente ('resto')
       const sil = primeraSilaba(resto)
-      
-      // Definimos el contenido del acorde (Ej: C/G)
       const contenido = bajo ? `${ac}${bajo}` : ac
 
-      // LÓGICA INTELIGENTE:
-      // Si encontramos una sílaba, la usamos como base.
-      // Si NO hay sílaba (resto vacío o signos de puntuación raros), usamos un espacio duro (&nbsp;)
-      // Esto hace que el acorde tenga "cuerpo" sin necesitar texto ni puntos.
-      
-      let htmlNota;
-      let tail; // Lo que sobra del texto después de usar la sílaba
+      let htmlNota
+      let tail
 
       if (sil) {
-        // CASO 1: Acorde sobre texto (Ej: {C}Hola)
+        // CASO 1: Hay sílaba (Ej: {C}Hola)
+        // El acorde se ancla a la sílaba visible.
         htmlNota = `<nota class="note" data-content="${contenido}">${sil}</nota>`
         tail = resto.slice(sil.length)
       } else {
-        // CASO 2: Acorde flotante solo (Ej: {C} o {C} ... )
-        // Usamos &nbsp; para que el navegador dibuje el bloque aunque esté vacío
-        htmlNota = `<nota class="note" data-content="${contenido}">&nbsp;</nota>`
-        tail = resto // Devolvemos el resto intacto (por si era un signo de puntuación)
+        // CASO 2: Acorde flotante (Ej: {C} {D})
+        // TRUCO: Usamos el propio nombre del acorde dentro de un span invisible.
+        // Esto obliga al navegador a reservar el ancho exacto del acorde.
+        // Agregamos un &nbsp; extra al final para dar un poco de aire entre acordes.
+        htmlNota = `<nota class="note" data-content="${contenido}"><span class="invisible">${contenido}</span>&nbsp;</nota>`
+        tail = resto
       }
 
       return `${spc}${htmlNota}${tail}`
