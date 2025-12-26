@@ -5,7 +5,6 @@ import {
   reemplazarTitulos,
   reemplazarAcordesDobles,
   traducirAcordes,
-  ocultarPunto,
 } from './traductor.js';          // ruta correcta
 
 export default function parseLyrics(text){
@@ -14,6 +13,5 @@ export default function parseLyrics(text){
   t = reemplazarAcordesDobles(t)
   t = traducirAcordes(t)
   t = traducirAcordes(t)          // 2ª pasada
-  t = ocultarPunto(t)
   return t
 }
