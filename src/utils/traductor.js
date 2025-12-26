@@ -1,9 +1,5 @@
-// src/utils/lyricsParser.js
-// -----------------------------------------------------------
-//  PARSER DE LETRAS CON ACORDES  {Am}  y  {{Am}}               
-// -----------------------------------------------------------
-
 /* ─── helpers simples ─── */
+// (Mantenemos tu regex de sílabas, funciona bien)
 const SILABA_RE =
   /[bcdfghjklmnñpqrstvwxyz]*(?:(?<!ch|ll|qu|rr)[aeiouáéíóú]|[auáéíóú]h|[bcdfghjklmnñpqrstvwxyz]{0,2}[aeiouáéíóú]h?)/i
 
@@ -27,6 +23,7 @@ export const agregarEtiquetasP = (txt) =>
 export const reemplazarTitulos = (txt) =>
   txt.replace(/\[(.*?)\:\]/g, `<b class="titulo">$1:</b>`)
 
+// Mantenemos Acordes Dobles {{Am}} igual, eso está bien
 const ACORDE_DOBLE_RE =
   /\{\{([A-G]b?#?(?:m|sus|maj|add)?\d*)(\/[A-G]b?#?)?\}\}/g
 export const reemplazarAcordesDobles = (txt) =>
@@ -35,28 +32,49 @@ export const reemplazarAcordesDobles = (txt) =>
     return `<b class="note-single">${nota}</b>`
   })
 
+// -----------------------------------------------------------
+//  AQUI ESTÁ LA MAGIA (CAMBIO PRINCIPAL)
+// -----------------------------------------------------------
+
+// 1. Regex mejorada:
+//    - Mantenemos la validación de notas (A-G...)
+//    - Cambiamos el final: (\s*) ([^\s\{]*)
+//      Esto captura espacios y luego texto que NO sea espacio NI otro corchete '{'.
+//      Así evitamos que se "coma" el siguiente acorde si están juntos.
 const ACORDE_RE =
-  /\{([A-G]b?#?(?:m|sus|maj|add)?\d*)(\/[A-G]b?#?)?\}(\s*)(\S*)(\.?)/g
+  /\{([A-G]b?#?(?:m|sus|maj|add)?\d*)(\/[A-G]b?#?)?\}(\s*)([^\s\{]*)/g
+
 export const traducirAcordes = (txt) =>
   txt.replace(
     ACORDE_RE,
-    (_, ac, bajo, spc, resto, punto) => {
+    (_, ac, bajo, spc, resto) => {
+      // Intentamos extraer la sílaba del texto siguiente ('resto')
       const sil = primeraSilaba(resto)
-      const tienePunto = punto && resto.trim() && !sil.includes('.')
-      const nota = sil && !tienePunto ? sil : ''
-      const tail = resto.slice(nota.length)
+      
+      // Definimos el contenido del acorde (Ej: C/G)
       const contenido = bajo ? `${ac}${bajo}` : ac
-      const htmlNota = nota
-        ? `<nota class="note" data-content="${contenido}">${nota}</nota>`
-        : `<nota class="note" data-content="${contenido}"> </nota>`
-      return `${spc}${htmlNota}${tail}${tienePunto ? '.' : ''}`
-    }
-  )
 
-export const ocultarPunto = (txt) =>
-  txt.replace(
-    /(<nota class='note'[^>]*> <\/nota>)\./g,
-    `$1<span class="invisible">.</span>`
+      // LÓGICA INTELIGENTE:
+      // Si encontramos una sílaba, la usamos como base.
+      // Si NO hay sílaba (resto vacío o signos de puntuación raros), usamos un espacio duro (&nbsp;)
+      // Esto hace que el acorde tenga "cuerpo" sin necesitar texto ni puntos.
+      
+      let htmlNota;
+      let tail; // Lo que sobra del texto después de usar la sílaba
+
+      if (sil) {
+        // CASO 1: Acorde sobre texto (Ej: {C}Hola)
+        htmlNota = `<nota class="note" data-content="${contenido}">${sil}</nota>`
+        tail = resto.slice(sil.length)
+      } else {
+        // CASO 2: Acorde flotante solo (Ej: {C} o {C} ... )
+        // Usamos &nbsp; para que el navegador dibuje el bloque aunque esté vacío
+        htmlNota = `<nota class="note" data-content="${contenido}">&nbsp;</nota>`
+        tail = resto // Devolvemos el resto intacto (por si era un signo de puntuación)
+      }
+
+      return `${spc}${htmlNota}${tail}`
+    }
   )
 
 /* ─── pipeline principal ─── */
@@ -64,15 +82,12 @@ export function parseLyrics(raw = '') {
   let t = agregarEtiquetasP(raw)
   t = reemplazarTitulos(t)
   t = reemplazarAcordesDobles(t)
-  t = traducirAcordes(t)      // 1ª pasada
-  t = traducirAcordes(t)      // 2ª pasada para rezagados
-  t = ocultarPunto(t)
+  
+  // Como mejoramos la Regex para no comerse el '{' siguiente, 
+  // a veces una sola pasada basta, pero mantenemos dos por seguridad con acordes anidados/pegados.
+  t = traducirAcordes(t)      
+  t = traducirAcordes(t)
+  
+  // YA NO NECESITAS ocultarPunto, lo eliminamos del pipeline
   return t
-}
-
-/* ─── util opcional para leer archivo remoto ─── */
-export async function fetchText(url) {
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`GET ${url} → ${res.status}`)
-  return res.text()
 }
