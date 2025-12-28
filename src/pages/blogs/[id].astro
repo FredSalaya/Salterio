@@ -18,7 +18,7 @@ const { data: blog, error } = await supabase
     tipo_blog:tipo_blog ( 
       tipo
     ),
-    autor:autor_id ( nombre, apodo, foto_url, correo )
+    autor:autor_id ( nombres, apodo, foto_url, email )
   `)
   .eq('id', id)
   .single()
@@ -73,9 +73,9 @@ const ytEmbed = blog.video_url
 
       <div>
         <p class="text-xs">
-          <strong class="block font-medium">{blog.autor?.nombre}</strong>
+          <strong class="block font-medium">{blog.autor?.nombres}</strong>
 
-          <span>{blog.autor?.correo}</span>
+          <span>{blog.autor?.email}</span>
         </p>
       </div>
     </a>

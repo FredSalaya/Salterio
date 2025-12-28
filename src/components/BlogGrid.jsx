@@ -19,7 +19,7 @@ export default function BlogGrid({ blogs = [] }) {
             const matchesSearch = (
                 blog.titulo?.toLowerCase().includes(search.toLowerCase()) ||
                 blog.resumen?.toLowerCase().includes(search.toLowerCase()) ||
-                blog.autor?.nombre?.toLowerCase().includes(search.toLowerCase()) ||
+                blog.autor?.nombres?.toLowerCase().includes(search.toLowerCase()) ||
                 blog.autor?.apodo?.toLowerCase().includes(search.toLowerCase())
             )
             const matchesCategory = selectedCategory === 'Todos' || blog.tipo_blog?.tipo === selectedCategory
@@ -96,8 +96,8 @@ export default function BlogGrid({ blogs = [] }) {
                                 video_url={blog.video_url}
                                 autor_nombre={
                                     blog.autor?.apodo
-                                        ? `${blog.autor.apodo} ${blog.autor.nombre}`
-                                        : blog.autor?.nombre
+                                        ? `${blog.autor.apodo} ${blog.autor.nombres}`
+                                        : blog.autor?.nombres
                                 }
                                 autor_foto={blog.autor?.foto_url}
                             />
