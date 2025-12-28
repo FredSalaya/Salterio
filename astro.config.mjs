@@ -16,17 +16,25 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: [
-        'favicon.svg',
-        'favicon.ico',
-        'robots.txt',
-        'apple-touch-icon.png'
-      ],
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        runtimeCaching: [
+          {
+            urlPattern: /\/music/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'music-html-cache',
+            }
+          },
+          // Cache Supabase calls if needed, though we prefer Dexie sync
+        ]
+      },
       manifest: {
         name: 'Salterio',
         short_name: 'Salterio',
-        description: 'Lista de Cantos Cristianos',
+        description: 'Lista de Cantos Cristianos Offline',
         theme_color: '#ffffff',
+        display: 'standalone',
         icons: [
           {
             src: 'pwa-192x192.png',
@@ -39,22 +47,7 @@ export default defineConfig({
             type: 'image/png',
           },
         ],
-      },
-      workbox: {
-        runtimeCaching: [
-          {
-            urlPattern: /\/music/,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'music-cache',
-              expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24 * 7, // 1 semana
-              },
-            },
-          },
-        ],
-      },
+      }
     })
   ],
 
