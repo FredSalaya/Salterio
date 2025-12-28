@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { db } from '../lib/db'
 import { useLiveQuery } from 'dexie-react-hooks'
 import BodyViewer from './BodyViewer'
