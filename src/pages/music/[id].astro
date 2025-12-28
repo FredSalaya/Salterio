@@ -2,35 +2,37 @@
 // src/pages/music/[id].astro
 export const prerender = false;
 
-import Layout from '../../layouts/Layout.astro'
-import BodyViewer from '../../components/BodyViewer.jsx'
-import supabase from '../../lib/supabase'
-import FancyText from '../../components/FancyText.jsx'
+import Layout from "../../layouts/Layout.astro";
+import SongViewer from "../../components/SongViewer.jsx";
+import supabase from "../../lib/supabase";
+import FancyText from "../../components/FancyText.jsx";
 
-const { id } = Astro.params
+const { id } = Astro.params;
 
 /* único fetch — lado servidor */
 const { data: song, error } = await supabase
-  .from('cantos')
-  .select('cuerpo, titulo')
-  .eq('id', id)
-  .single()
+  .from("cantos")
+  .select(
+    "id, titulo, tono, autor, version, cuerpo, historia, pdf, fundamento_biblico, youtube_url, mp3_urls",
+  )
+  .eq("id", id)
+  .single();
 
-if (error || !song) throw new Error('Not found')
+if (error || !song) throw new Error("Not found");
 ---
 
 <Layout title={song.titulo}>
-    <h2 class="text-center my-8">
+  <h2 class="text-center my-8">
     <FancyText
       text={song.titulo}
-      colors={['#40ffaa', '#4079ff', '#ff40c6']}
+      colors={["#40ffaa", "#4079ff", "#ff40c6"]}
       animationSpeed={4}
       showBorder
       className="text-4xl font-extrabold"
       client:only="react"
     />
   </h2>
-<br>
+  <br />
   <!-- le pasamos solo la letra -->
-  <BodyViewer raw={song.cuerpo} transport={0} client:only="react" />
+  <SongViewer song={song} client:only="react" />
 </Layout>
