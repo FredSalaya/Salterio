@@ -6,34 +6,43 @@ import FancyText from "../components/FancyText.jsx";
 import SplashScreen from "../components/SplashScreen.jsx";
 import supabase from "../lib/supabase";
 
-// 📥 consulta
-const { data: rows, error } = await supabase
-  .from("cantos")
-  .select(
-    `
-    id,
-    titulo,
-    tono,
-    autor,
-    version,
-    categorias:canto_categoria(
-      categoria:categorias(nombre)
+// 📥 consulta (con manejo de errores para modo offline)
+let data = [];
+let fetchError = null;
+
+try {
+  const { data: rows, error } = await supabase
+    .from("cantos")
+    .select(
+      `
+      id,
+      titulo,
+      tono,
+      autor,
+      version,
+      categorias:canto_categoria(
+        categoria:categorias(nombre)
+      )
+    `,
     )
-  `,
-  )
-  .order("titulo", { ascending: true });
+    .order("titulo", { ascending: true });
 
-if (error) throw error;
+  if (error) throw error;
 
-// 🔄 adapta al shape que espera SongTable
-const data = rows.map((r) => ({
-  id: r.id,
-  title: r.titulo,
-  version: r.version,
-  key: r.tono,
-  author: r.autor,
-  categories: r.categorias.map((c) => c.categoria.nombre),
-}));
+  // 🔄 adapta al shape que espera SongTable
+  data = rows.map((r) => ({
+    id: r.id,
+    title: r.titulo,
+    version: r.version,
+    key: r.tono,
+    author: r.autor,
+    categories: r.categorias.map((c) => c.categoria.nombre),
+  }));
+} catch (e) {
+  console.error("Failed to fetch songs from Supabase:", e);
+  fetchError = e;
+  // Data queda vacío, el componente cliente intentará leer de Dexie
+}
 ---
 
 <Layout title="Lista de Canciones">
