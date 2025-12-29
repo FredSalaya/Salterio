@@ -1,20 +1,24 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { db } from '../lib/db';
 import supabase from '../lib/supabase';
 
 const SYNC_INTERVAL = 1000 * 60 * 5; // 5 minutos
 
 export function useSyncCantos() {
+    const [status, setStatus] = useState('idle'); // idle, syncing, error
+    const [lastSyncTime, setLastSyncTime] = useState(null);
+
     useEffect(() => {
+        setLastSyncTime(localStorage.getItem('last_sync_timestamp'));
+
         const sync = async () => {
             try {
+                setStatus('syncing');
                 // 1. Obtener última sincronización
                 const lastSync = localStorage.getItem('last_sync_timestamp');
 
-                // 2. Query a Supabase (buscar nuevos o actualizados)
-                // Nota: Si no existe 'updated_at' en tu DB, usaremos 'creado_en' como fallback
-                // Idealmente deberías agregar 'updated_at' a tu tabla 'cantos'
-                let query = supabase.from('cantos').select('*');
+                // 2. Query a Supabase
+                let query = supabase.from('cantos').select('id, titulo, tono, autor, version, cuerpo, historia, pdf, fundamento_biblico, youtube_url, mp3_urls, creado_en');
 
                 if (lastSync) {
                     query = query.gt('creado_en', lastSync);
@@ -24,6 +28,7 @@ export function useSyncCantos() {
 
                 if (error) {
                     console.error('Error syncing:', error);
+                    setStatus('error');
                     return;
                 }
 
@@ -34,21 +39,27 @@ export function useSyncCantos() {
                 }
 
                 // Actualizar timestamp
-                localStorage.setItem('last_sync_timestamp', new Date().toISOString());
+                const now = new Date().toISOString();
+                localStorage.setItem('last_sync_timestamp', now);
+                setLastSyncTime(now);
+                setStatus('idle');
 
             } catch (err) {
                 console.error('Sync failed:', err);
+                setStatus('error');
             }
         };
 
         // Ejecutar al montar
         sync();
 
-        // Loop de sync (si está online)
+        // Loop de sync
         const interval = setInterval(() => {
             if (navigator.onLine) sync();
         }, SYNC_INTERVAL);
 
         return () => clearInterval(interval);
     }, []);
+
+    return { status, lastSync: lastSyncTime };
 }
