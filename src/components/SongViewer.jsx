@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import { db } from '../lib/db'
-import { useLiveQuery } from 'dexie-react-hooks'
+import { useCanto } from '../hooks/useCanto'
 import BodyViewer from './BodyViewer'
 import SongDrawer from './SongDrawer'
 import { Bars3BottomRightIcon, CloudIcon } from '@heroicons/react/24/outline'
@@ -8,14 +7,8 @@ import { Bars3BottomRightIcon, CloudIcon } from '@heroicons/react/24/outline'
 export default function SongViewer({ song: initialSong }) {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
-    // "Live" Query: Se actualiza automáticamente si cambia la BD local (Sync)
-    const localSong = useLiveQuery(
-        () => db.cantos.get(initialSong.id),
-        [initialSong.id]
-    )
-
-    // Preferimos la versión local (que tiene updates offline), fallback a lo que vino del server
-    const song = localSong || initialSong
+    // Hook adaptativo: Usa Dexie si es PWA, sino usa initialSong
+    const song = useCanto(initialSong, initialSong.id)
 
     return (
         <div className="relative min-h-screen pb-24">
@@ -25,12 +18,7 @@ export default function SongViewer({ song: initialSong }) {
             </div>
 
             {/* Offline/Sync Indicator (Optional) */}
-            {!localSong && (
-                <div className="fixed top-24 right-20 z-20 text-xs text-gray-400 flex items-center gap-1 bg-white/50 backdrop-blur px-2 py-1 rounded-full">
-                    <CloudIcon className="w-4 h-4" />
-                    <span>Server</span>
-                </div>
-            )}
+            {/* Source Indicator (Optional logic could go here) */}
 
             {/* Floating Action Button for Extras */}
             <button

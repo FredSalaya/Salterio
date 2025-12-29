@@ -1,6 +1,30 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { XMarkIcon } from '@heroicons/react/24/outline'
-import { FaFilePdf, FaYoutube, FaSpotify, FaHistory, FaBookOpen } from 'react-icons/fa'
+import { FaFilePdf, FaYoutube, FaSpotify, FaHistory, FaBookOpen, FaDownload, FaCheck } from 'react-icons/fa'
+import { useAssetCache } from '../hooks/useAssetCache'
+
+function PDFDownloadButton({ url }) {
+    const { status, cacheAsset, isCached } = useAssetCache(url);
+
+    if (isCached || status === 'cached') {
+        return <span className="text-green-600 text-xs flex items-center gap-1"><FaCheck /> Disponible Offline</span>
+    }
+
+    return (
+        <button
+            onClick={(e) => { e.preventDefault(); cacheAsset(); }}
+            disabled={status === 'downloading'}
+            className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+            title="Descargar para offline"
+        >
+            {status === 'downloading' ? (
+                <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+            ) : (
+                <FaDownload />
+            )}
+        </button>
+    )
+}
 
 export default function SongDrawer({
     isOpen,
@@ -65,15 +89,20 @@ export default function SongDrawer({
                             {/* Quick Actions */}
                             <section className="grid grid-cols-2 gap-3">
                                 {song.pdf && (
-                                    <a
-                                        href={song.pdf}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-center justify-center gap-2 p-3 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-colors font-medium border border-red-100"
-                                    >
-                                        <FaFilePdf />
-                                        Ver PDF
-                                    </a>
+                                    <div className="flex flex-col gap-1">
+                                        <a
+                                            href={song.pdf}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center justify-center gap-2 p-3 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-colors font-medium border border-red-100"
+                                        >
+                                            <FaFilePdf />
+                                            Ver PDF
+                                        </a>
+                                        <div className="flex justify-center">
+                                            <PDFDownloadButton url={song.pdf} />
+                                        </div>
+                                    </div>
                                 )}
                                 {song.youtube_url && (
                                     <a

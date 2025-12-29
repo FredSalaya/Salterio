@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { db } from '../lib/db';
 import supabase from '../lib/supabase';
+import { isPWA } from '../utils/pwaEnv';
 
 const SYNC_INTERVAL = 1000 * 60 * 5; // 5 minutos
 
@@ -9,6 +10,14 @@ export function useSyncCantos() {
     const [lastSyncTime, setLastSyncTime] = useState(null);
 
     useEffect(() => {
+        // [ADAPTIVE STRATEGY]
+        // Si NO es PWA, no saturamos el dispositivo con descargas masivas.
+        // El usuario web usará fetch directo (SSR/Client) bajo demanda.
+        if (!isPWA()) {
+            console.log("Web Mode detected: Background sync disabled.");
+            return;
+        }
+
         setLastSyncTime(localStorage.getItem('last_sync_timestamp'));
 
         const sync = async () => {
