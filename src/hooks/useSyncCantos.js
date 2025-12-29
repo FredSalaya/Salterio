@@ -13,7 +13,8 @@ export function useSyncCantos() {
         // [ADAPTIVE STRATEGY]
         // Si NO es PWA, no saturamos el dispositivo con descargas masivas.
         // El usuario web usará fetch directo (SSR/Client) bajo demanda.
-        if (!isPWA()) {
+        // EXCEPCIÓN: En modo DEV siempre permitimos sync para testear.
+        if (!isPWA() && !import.meta.env.DEV) {
             console.log("Web Mode detected: Background sync disabled.");
             return;
         }

@@ -32,6 +32,8 @@ export default defineConfig({
       workbox: {
         maximumFileSizeToCacheInBytes: 4000000, // 4MB to be safe
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        navigateFallback: '/offline',
+        navigateFallbackDenylist: [/^\/api/, /^\/assets/],
         runtimeCaching: [
           {
             urlPattern: /\/music/,

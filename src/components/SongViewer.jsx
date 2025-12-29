@@ -4,11 +4,23 @@ import BodyViewer from './BodyViewer'
 import SongDrawer from './SongDrawer'
 import { Bars3BottomRightIcon, CloudIcon } from '@heroicons/react/24/outline'
 
+// Helper para obtener ID de la URL si estamos en modo offline/fallback
+function getUrlId() {
+    if (typeof window === 'undefined') return null;
+    const parts = window.location.pathname.split('/');
+    // Asume ruta /music/[id]
+    const id = parts[parts.length - 1];
+    return isNaN(parseInt(id)) ? null : parseInt(id);
+}
+
 export default function SongViewer({ song: initialSong }) {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
-    // Hook adaptativo: Usa Dexie si es PWA, sino usa initialSong
-    const song = useCanto(initialSong, initialSong.id)
+    // Si initialSong no tiene ID válido (ej: fallback), intentamos leer de la URL
+    const targetId = initialSong?.id || getUrlId();
+
+    // Hook adaptativo
+    const song = useCanto(initialSong, targetId)
 
     return (
         <div className="relative min-h-screen pb-24">
