@@ -64,6 +64,18 @@ try {
         </p>
       </div>
 
+      {
+        fetchError && (
+          <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 text-center">
+            <p class="text-amber-800 font-medium">⚠️ Modo Offline</p>
+            <p class="text-amber-700 text-sm">
+              No se pudo conectar al servidor. Se muestran canciones guardadas
+              localmente.
+            </p>
+          </div>
+        )
+      }
+
       <SongTable songs={data} client:only="react" />
     </div>
   </div>
