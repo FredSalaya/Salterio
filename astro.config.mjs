@@ -1,5 +1,8 @@
 // astro.config.mjs
 import { defineConfig } from 'astro/config'
+import { loadEnv } from 'vite'
+
+const { SUPABASE_URL, SUPABASE_ANON_KEY } = loadEnv(process.env.NODE_ENV, process.cwd(), "");
 
 import tailwind from '@astrojs/tailwind';
 import react from '@astrojs/react'
@@ -11,6 +14,13 @@ export default defineConfig({
   site: 'https://salterio.site',
   output: 'server',
   adapter: node({ mode: 'standalone' }),
+  adapter: node({ mode: 'standalone' }),
+  vite: {
+    define: {
+      'import.meta.env.PUBLIC_SUPABASE_URL': JSON.stringify(SUPABASE_URL),
+      'import.meta.env.PUBLIC_SUPABASE_ANON_KEY': JSON.stringify(SUPABASE_ANON_KEY),
+    }
+  },
   integrations: [
     tailwind(),
     react(),
