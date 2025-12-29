@@ -14,7 +14,6 @@ export default defineConfig({
   site: 'https://salterio.site',
   output: 'server',
   adapter: node({ mode: 'standalone' }),
-  adapter: node({ mode: 'standalone' }),
   vite: {
     define: {
       'import.meta.env.PUBLIC_SUPABASE_URL': JSON.stringify(SUPABASE_URL),
@@ -32,8 +31,8 @@ export default defineConfig({
       workbox: {
         maximumFileSizeToCacheInBytes: 4000000, // 4MB to be safe
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-        navigateFallback: '/offline',
-        navigateFallbackDenylist: [/^\/api/, /^\/assets/],
+        // navigateFallback solo funciona en producción con precache
+        // En dev, el fallback se maneja via try/catch en las páginas SSR
         runtimeCaching: [
           {
             urlPattern: /\/music/,
