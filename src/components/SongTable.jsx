@@ -9,6 +9,8 @@ import {
 } from '@heroicons/react/24/solid'
 import { HeartIcon as HeartOutline } from '@heroicons/react/24/outline'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useLiveQuery } from 'dexie-react-hooks'
+import { db } from '../lib/db'
 
 // Quita acentos y normaliza mayúsculas/minúsculas
 function normalize(str) {
@@ -18,13 +20,33 @@ function normalize(str) {
     .replace(/[\u0300-\u036f]/g, "")
 }
 
-export default function SongTable({ songs = [] }) {
+export default function SongTable({ songs: propSongs = [] }) {
   const [filter, setFilter] = useState('')
   const [viewMode, setViewMode] = useState('table') // 'table' | 'grid'
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' })
   const [favorites, setFavorites] = useState([])
   const [currentSong, setCurrentSong] = useState(null)
   const [isPlaying, setIsPlaying] = useState(false)
+
+  // Fallback a Dexie si no hay datos del servidor (modo offline)
+  const localSongs = useLiveQuery(
+    async () => {
+      if (propSongs.length > 0) return null; // No necesitamos Dexie si hay datos del server
+      const all = await db.cantos.toArray();
+      return all.map(r => ({
+        id: r.id,
+        title: r.titulo,
+        version: r.version,
+        key: r.tono,
+        author: r.autor,
+        categories: [] // Las categorías no están en la tabla principal, las omitimos por ahora
+      }));
+    },
+    [propSongs.length]
+  );
+
+  // Usar datos locales si el server falló
+  const songs = propSongs.length > 0 ? propSongs : (localSongs || []);
 
   // Cargar favoritos del localStorage al inicio
   useEffect(() => {
