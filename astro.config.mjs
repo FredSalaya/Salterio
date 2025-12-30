@@ -31,9 +31,8 @@ export default defineConfig({
       workbox: {
         maximumFileSizeToCacheInBytes: 4000000, // 4MB to be safe
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-        // Fallback SOLO para rutas de música - no para toda la app
-        navigateFallback: '/music-offline',
-        navigateFallbackAllowlist: [/^\/music/], // Solo rutas que empiezan con /music
+        // NO usamos navigateFallback - es para SPAs, no para SSR
+        // El manejo offline se hace via try/catch en las páginas Astro
         runtimeCaching: [
           {
             urlPattern: /\/api\/songs\.json/,
