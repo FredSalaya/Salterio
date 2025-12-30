@@ -31,8 +31,9 @@ export default defineConfig({
       workbox: {
         maximumFileSizeToCacheInBytes: 4000000, // 4MB to be safe
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-        // navigateFallback solo funciona en producción con precache
-        // En dev, el fallback se maneja via try/catch en las páginas SSR
+        // Página de fallback para navegación offline
+        navigateFallback: '/music-offline',
+        navigateFallbackDenylist: [/^\/api/, /^\/admin/, /^\/login/],
         runtimeCaching: [
           {
             urlPattern: /\/api\/songs\.json/,
@@ -44,6 +45,13 @@ export default defineConfig({
                 maxAgeSeconds: 60 * 60 * 24 // 24 horas
               },
               networkTimeoutSeconds: 3 // Si tarda más de 3s, usa cache
+            }
+          },
+          {
+            urlPattern: /\/music-offline/,
+            handler: 'CacheFirst', // Siempre del cache primero
+            options: {
+              cacheName: 'offline-page-cache',
             }
           },
           {

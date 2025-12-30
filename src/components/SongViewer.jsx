@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useCanto } from '../hooks/useCanto'
 import BodyViewer from './BodyViewer'
 import SongDrawer from './SongDrawer'
@@ -22,8 +22,22 @@ export default function SongViewer({ song: initialSong }) {
     // Hook adaptativo
     const song = useCanto(initialSong, targetId)
 
+    // Actualizar título del documento cuando se carga la canción
+    useEffect(() => {
+        if (song?.titulo && song.titulo !== 'Cargando...') {
+            document.title = `${song.titulo} - Salterio`;
+        }
+    }, [song?.titulo]);
+
     return (
         <div className="relative min-h-screen pb-24">
+            {/* Dynamic Title - Se actualiza cuando carga de cache */}
+            {song?.titulo && song.titulo !== 'Cargando...' && (
+                <h1 className="text-center py-6 text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                    {song.titulo}
+                </h1>
+            )}
+
             {/* Main Content: Lyrics & Chords */}
             <div className="transition-all duration-300">
                 <BodyViewer raw={song.cuerpo} transport={0} />

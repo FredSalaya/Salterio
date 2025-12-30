@@ -18,23 +18,18 @@ export function useSyncCantos() {
 
         const sync = async () => {
             try {
-                console.log('[SYNC] Starting sync...');
                 setStatus('syncing');
 
                 // 0. Verificar si IndexedDB está vacío (forzar sync completo)
                 const localCount = await db.cantos.count();
-                console.log('[SYNC] Local records count:', localCount);
 
                 // 1. Obtener última sincronización
                 let lastSync = localStorage.getItem('last_sync_timestamp');
 
                 // Si la DB local está vacía, ignoramos el timestamp y forzamos sync completo
                 if (localCount === 0) {
-                    console.log('[SYNC] IndexedDB is empty! Forcing full sync...');
-                    lastSync = null; // Esto ignora el filtro .gt()
+                    lastSync = null;
                 }
-
-                console.log('[SYNC] Last sync timestamp:', lastSync);
 
                 // 2. Query a Supabase
                 let query = supabase.from('cantos').select('id, titulo, tono, autor, version, cuerpo, historia, pdf, fundamento_biblico, youtube_url, mp3_urls, creado_en');
@@ -43,24 +38,17 @@ export function useSyncCantos() {
                     query = query.gt('creado_en', lastSync);
                 }
 
-                console.log('[SYNC] Fetching from Supabase...');
                 const { data, error } = await query;
 
                 if (error) {
-                    console.error('[SYNC] Supabase error:', error);
+                    console.error('[Sync] Error:', error.message);
                     setStatus('error');
                     return;
                 }
 
-                console.log('[SYNC] Received data:', data ? data.length : 0, 'records');
-
                 if (data && data.length > 0) {
                     // 3. Guardar en local
-                    console.log('[SYNC] Writing to IndexedDB...');
                     await db.cantos.bulkPut(data);
-                    console.log(`[SYNC] Successfully synced ${data.length} songs to IndexedDB!`);
-                } else {
-                    console.log('[SYNC] No new data to sync (or already up to date).');
                 }
 
                 // Actualizar timestamp

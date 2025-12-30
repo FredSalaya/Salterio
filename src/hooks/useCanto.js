@@ -1,37 +1,47 @@
-import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '../lib/db';
-import { isPWA } from '../utils/pwaEnv';
 import { useState, useEffect } from 'react';
 
 /**
  * Facade Hook para obtener datos de cantos.
+ * Si no hay datos del servidor, busca en el JSON API cacheado.
  * @param {Object} initialData - Datos que vienen del servidor (SSR)
- * @param {string} id - ID del canto (opcional, si es para detalle)
- * @returns {Object} El canto (o lista) final a renderizar
+ * @param {string} id - ID del canto
+ * @returns {Object} El canto final a renderizar
  */
 export function useCanto(initialData, id) {
-    // Estado para detectar PWA (ya que isPWA() puede cambiar o necesitar window)
-    const [isApp, setIsApp] = useState(false);
+    const [song, setSong] = useState(initialData);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        setIsApp(isPWA());
-    }, []);
+        // Si ya tenemos datos completos del servidor, no hacemos nada
+        if (initialData?.cuerpo) {
+            setSong(initialData);
+            return;
+        }
 
-    // 1. Escenario PWA: Intentamos leer de Dexie
-    const localData = useLiveQuery(
-        () => {
-            if (!isApp || !id) return undefined;
-            return db.cantos.get(id);
-        },
-        [id, isApp]
-    );
+        // Si no hay datos o faltan campos importantes, buscamos en el JSON cacheado
+        const fetchFromCache = async () => {
+            try {
+                setLoading(true);
+                const response = await fetch('/api/songs.json');
+                if (!response.ok) throw new Error('Failed to fetch');
 
-    // 2. Selección de Fuente
-    // Si estamos en app Y tenemos dato local, úsalo. Si no, fallback al server data.
-    if (isApp && localData) {
-        return localData;
-    }
+                const allSongs = await response.json();
+                const found = allSongs.find(s => s.id === id || s.id === parseInt(id));
 
-    // Escenario Web: Usamos lo que vino por props (fetch directo o SSR)
-    return initialData;
+                if (found) {
+                    setSong(found);
+                }
+            } catch (e) {
+                console.error('Error fetching song from cache:', e);
+                // Mantener initialData como fallback
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchFromCache();
+    }, [initialData, id]);
+
+    return song || initialData || { titulo: 'Cargando...', cuerpo: '' };
 }
+
