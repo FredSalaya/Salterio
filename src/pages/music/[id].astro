@@ -9,43 +9,24 @@ import FancyText from "../../components/FancyText.jsx";
 
 const { id } = Astro.params;
 
-// Fetch con manejo de errores para modo offline
-let song = null;
-let isOffline = false;
+// Fetch de la canción
+const { data: song, error } = await supabase
+  .from("cantos")
+  .select(
+    "id, titulo, tono, autor, version, cuerpo, historia, pdf, fundamento_biblico, youtube_url, mp3_urls",
+  )
+  .eq("id", id)
+  .single();
 
-try {
-  const { data, error } = await supabase
-    .from("cantos")
-    .select(
-      "id, titulo, tono, autor, version, cuerpo, historia, pdf, fundamento_biblico, youtube_url, mp3_urls",
-    )
-    .eq("id", id)
-    .single();
-
-  if (error) throw error;
-  song = data;
-} catch (e) {
-  console.error("Failed to fetch song:", e);
-  isOffline = true;
-  // Pasamos null - SongViewer buscará en cache
+if (error || !song) {
+  return Astro.redirect("/music");
 }
 ---
 
-<Layout title={song?.titulo || "Cargando..."}>
-  {
-    isOffline && (
-      <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mx-4 mt-4 text-center">
-        <p class="text-amber-800 font-medium">⚠️ Modo Offline</p>
-        <p class="text-amber-700 text-sm">
-          Buscando canción en datos locales...
-        </p>
-      </div>
-    )
-  }
-
+<Layout title={song.titulo}>
   <h2 class="text-center my-8">
     <FancyText
-      text={song?.titulo || "Cargando..."}
+      text={song.titulo}
       colors={["#40ffaa", "#4079ff", "#ff40c6"]}
       animationSpeed={4}
       showBorder
@@ -54,6 +35,5 @@ try {
     />
   </h2>
   <br />
-  <!-- SongViewer buscará en cache si song es null -->
-  <SongViewer song={song || { id: id }} client:only="react" />
+  <SongViewer song={song} client:only="react" />
 </Layout>

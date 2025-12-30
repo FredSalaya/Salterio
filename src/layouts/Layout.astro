@@ -7,7 +7,6 @@ export interface Props {
 const { title } = Astro.props as Props;
 
 import Header from "../components/Header.jsx";
-import SyncManager from "../components/SyncManager.jsx";
 import Footer from "../components/Footer.astro";
 import "../styles/global.css";
 import "../styles/lyrics.css";
@@ -27,7 +26,6 @@ import { pwaInfo } from "virtual:pwa-info";
   </head>
   <body class="bg-gray-50 text-gray-800">
     <Header client:load />
-    <SyncManager client:only="react" />
     <main>
       <slot />
       <!-- aquí entra TODO lo de la página -->

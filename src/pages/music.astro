@@ -6,43 +6,36 @@ import FancyText from "../components/FancyText.jsx";
 import SplashScreen from "../components/SplashScreen.jsx";
 import supabase from "../lib/supabase";
 
-// 📥 consulta (con manejo de errores para modo offline)
-let data = [];
-let fetchError = null;
-
-try {
-  const { data: rows, error } = await supabase
-    .from("cantos")
-    .select(
-      `
-      id,
-      titulo,
-      tono,
-      autor,
-      version,
-      categorias:canto_categoria(
-        categoria:categorias(nombre)
-      )
-    `,
+// 📥 Consulta de canciones
+const { data: rows, error } = await supabase
+  .from("cantos")
+  .select(
+    `
+    id,
+    titulo,
+    tono,
+    autor,
+    version,
+    categorias:canto_categoria(
+      categoria:categorias(nombre)
     )
-    .order("titulo", { ascending: true });
+  `,
+  )
+  .order("titulo", { ascending: true });
 
-  if (error) throw error;
-
-  // 🔄 adapta al shape que espera SongTable
-  data = rows.map((r) => ({
-    id: r.id,
-    title: r.titulo,
-    version: r.version,
-    key: r.tono,
-    author: r.autor,
-    categories: r.categorias.map((c) => c.categoria.nombre),
-  }));
-} catch (e) {
-  console.error("Failed to fetch songs from Supabase:", e);
-  fetchError = e;
-  // Data queda vacío, el componente cliente intentará leer de Dexie
+if (error) {
+  console.error("Error fetching songs:", error);
 }
+
+// 🔄 Adaptar al formato que espera SongTable
+const data = (rows || []).map((r) => ({
+  id: r.id,
+  title: r.titulo,
+  version: r.version,
+  key: r.tono,
+  author: r.autor,
+  categories: r.categorias.map((c) => c.categoria.nombre),
+}));
 ---
 
 <Layout title="Lista de Canciones">
@@ -63,18 +56,6 @@ try {
           buscador o filtra por categorías para encontrar lo que necesitas.
         </p>
       </div>
-
-      {
-        fetchError && (
-          <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 text-center">
-            <p class="text-amber-800 font-medium">⚠️ Modo Offline</p>
-            <p class="text-amber-700 text-sm">
-              No se pudo conectar al servidor. Se muestran canciones guardadas
-              localmente.
-            </p>
-          </div>
-        )
-      }
 
       <SongTable songs={data} client:only="react" />
     </div>

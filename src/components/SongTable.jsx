@@ -9,7 +9,6 @@ import {
 } from '@heroicons/react/24/solid'
 import { HeartIcon as HeartOutline } from '@heroicons/react/24/outline'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useSongsData } from '../hooks/useSongsData'
 
 // Quita acentos y normaliza mayúsculas/minúsculas
 function normalize(str) {
@@ -19,29 +18,13 @@ function normalize(str) {
     .replace(/[\u0300-\u036f]/g, "")
 }
 
-export default function SongTable({ songs: propSongs = [] }) {
+export default function SongTable({ songs = [] }) {
   const [filter, setFilter] = useState('')
   const [viewMode, setViewMode] = useState('table') // 'table' | 'grid'
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' })
   const [favorites, setFavorites] = useState([])
   const [currentSong, setCurrentSong] = useState(null)
   const [isPlaying, setIsPlaying] = useState(false)
-
-  // Fallback a JSON API cacheado si no hay datos del servidor (modo offline)
-  const { songs: apiSongs, loading, isOffline } = useSongsData([])
-
-  // Mapear datos del API al formato esperado
-  const mappedApiSongs = apiSongs.map(r => ({
-    id: r.id,
-    title: r.titulo,
-    version: r.version,
-    key: r.tono,
-    author: r.autor,
-    categories: [] // Las categorías no están en el API simplificado
-  }))
-
-  // Usar datos del server si existen, sino del API cacheado
-  const songs = propSongs.length > 0 ? propSongs : mappedApiSongs
 
 
   // Cargar favoritos del localStorage al inicio

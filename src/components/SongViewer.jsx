@@ -2,25 +2,13 @@ import { useState, useEffect } from 'react'
 import { useCanto } from '../hooks/useCanto'
 import BodyViewer from './BodyViewer'
 import SongDrawer from './SongDrawer'
-import { Bars3BottomRightIcon, CloudIcon } from '@heroicons/react/24/outline'
-
-// Helper para obtener ID de la URL si estamos en modo offline/fallback
-function getUrlId() {
-    if (typeof window === 'undefined') return null;
-    const parts = window.location.pathname.split('/');
-    // Asume ruta /music/[id]
-    const id = parts[parts.length - 1];
-    return isNaN(parseInt(id)) ? null : parseInt(id);
-}
+import { Bars3BottomRightIcon } from '@heroicons/react/24/outline'
 
 export default function SongViewer({ song: initialSong }) {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
-    // Si initialSong no tiene ID válido (ej: fallback), intentamos leer de la URL
-    const targetId = initialSong?.id || getUrlId();
-
-    // Hook adaptativo
-    const song = useCanto(initialSong, targetId)
+    // Obtener datos del servidor
+    const song = useCanto(initialSong)
 
     // Actualizar título del documento cuando se carga la canción
     useEffect(() => {
