@@ -30,37 +30,9 @@ export default defineConfig({
       },
       workbox: {
         maximumFileSizeToCacheInBytes: 4000000, // 4MB to be safe
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-        // NO usamos navigateFallback - es para SPAs, no para SSR
-        // El manejo offline se hace via try/catch en las páginas Astro
-        runtimeCaching: [
-          {
-            urlPattern: /\/api\/songs\.json/,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'songs-api-cache',
-              expiration: {
-                maxEntries: 1,
-                maxAgeSeconds: 60 * 60 * 24 // 24 horas
-              },
-              networkTimeoutSeconds: 3 // Si tarda más de 3s, usa cache
-            }
-          },
-          {
-            urlPattern: /\/music-offline/,
-            handler: 'CacheFirst', // Siempre del cache primero
-            options: {
-              cacheName: 'offline-page-cache',
-            }
-          },
-          {
-            urlPattern: /\/music/,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'music-html-cache',
-            }
-          },
-        ]
+        // Solo cacheamos assets estáticos, no rutas SSR
+        globPatterns: ['**/*.{js,css,ico,png,svg,woff,woff2}'],
+        // Sin navigateFallback - app SSR no lo necesita
       },
       manifest: {
         name: 'Salterio',
