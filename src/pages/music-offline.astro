@@ -3,6 +3,9 @@
 // Página ESTÁTICA que será precacheada por el Service Worker
 // Carga los datos del API cacheado en el cliente
 
+// IMPORTANTE: Esta página DEBE ser estática para que funcione el offline
+export const prerender = true;
+
 import Layout from "../layouts/Layout.astro";
 import SongTable from "../components/SongTable.jsx";
 

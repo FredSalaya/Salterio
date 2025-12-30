@@ -31,13 +31,6 @@ export default function SongViewer({ song: initialSong }) {
 
     return (
         <div className="relative min-h-screen pb-24">
-            {/* Dynamic Title - Se actualiza cuando carga de cache */}
-            {song?.titulo && song.titulo !== 'Cargando...' && (
-                <h1 className="text-center py-6 text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                    {song.titulo}
-                </h1>
-            )}
-
             {/* Main Content: Lyrics & Chords */}
             <div className="transition-all duration-300">
                 <BodyViewer raw={song.cuerpo} transport={0} />
