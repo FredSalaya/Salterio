@@ -31,9 +31,9 @@ export default defineConfig({
       workbox: {
         maximumFileSizeToCacheInBytes: 4000000, // 4MB to be safe
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-        // Página de fallback para navegación offline
+        // Fallback SOLO para rutas de música - no para toda la app
         navigateFallback: '/music-offline',
-        navigateFallbackDenylist: [/^\/api/, /^\/admin/, /^\/login/],
+        navigateFallbackAllowlist: [/^\/music/], // Solo rutas que empiezan con /music
         runtimeCaching: [
           {
             urlPattern: /\/api\/songs\.json/,
