@@ -35,13 +35,24 @@ export default defineConfig({
         // En dev, el fallback se maneja via try/catch en las páginas SSR
         runtimeCaching: [
           {
+            urlPattern: /\/api\/songs\.json/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'songs-api-cache',
+              expiration: {
+                maxEntries: 1,
+                maxAgeSeconds: 60 * 60 * 24 // 24 horas
+              },
+              networkTimeoutSeconds: 3 // Si tarda más de 3s, usa cache
+            }
+          },
+          {
             urlPattern: /\/music/,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'music-html-cache',
             }
           },
-          // Cache Supabase calls if needed, though we prefer Dexie sync
         ]
       },
       manifest: {

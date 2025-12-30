@@ -9,8 +9,7 @@ import {
 } from '@heroicons/react/24/solid'
 import { HeartIcon as HeartOutline } from '@heroicons/react/24/outline'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useLiveQuery } from 'dexie-react-hooks'
-import { db } from '../lib/db'
+import { useSongsData } from '../hooks/useSongsData'
 
 // Quita acentos y normaliza mayúsculas/minúsculas
 function normalize(str) {
@@ -28,25 +27,22 @@ export default function SongTable({ songs: propSongs = [] }) {
   const [currentSong, setCurrentSong] = useState(null)
   const [isPlaying, setIsPlaying] = useState(false)
 
-  // Fallback a Dexie si no hay datos del servidor (modo offline)
-  const localSongs = useLiveQuery(
-    async () => {
-      if (propSongs.length > 0) return null; // No necesitamos Dexie si hay datos del server
-      const all = await db.cantos.toArray();
-      return all.map(r => ({
-        id: r.id,
-        title: r.titulo,
-        version: r.version,
-        key: r.tono,
-        author: r.autor,
-        categories: [] // Las categorías no están en la tabla principal, las omitimos por ahora
-      }));
-    },
-    [propSongs.length]
-  );
+  // Fallback a JSON API cacheado si no hay datos del servidor (modo offline)
+  const { songs: apiSongs, loading, isOffline } = useSongsData([])
 
-  // Usar datos locales si el server falló
-  const songs = propSongs.length > 0 ? propSongs : (localSongs || []);
+  // Mapear datos del API al formato esperado
+  const mappedApiSongs = apiSongs.map(r => ({
+    id: r.id,
+    title: r.titulo,
+    version: r.version,
+    key: r.tono,
+    author: r.autor,
+    categories: [] // Las categorías no están en el API simplificado
+  }))
+
+  // Usar datos del server si existen, sino del API cacheado
+  const songs = propSongs.length > 0 ? propSongs : mappedApiSongs
+
 
   // Cargar favoritos del localStorage al inicio
   useEffect(() => {
