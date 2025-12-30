@@ -67,7 +67,7 @@ if (!self.define) {
     });
   };
 }
-define(['./workbox-be266a9d'], (function (workbox) { 'use strict';
+define(['./workbox-5a5d9309'], (function (workbox) { 'use strict';
 
   self.skipWaiting();
   workbox.clientsClaim();
@@ -79,7 +79,7 @@ define(['./workbox-be266a9d'], (function (workbox) { 'use strict';
    */
   workbox.precacheAndRoute([{
     "url": "/",
-    "revision": "0.iknncq7n7m8"
+    "revision": "0.8rn5glp62fg"
   }], {
     "directoryIndex": "index.html"
   });
@@ -87,9 +87,5 @@ define(['./workbox-be266a9d'], (function (workbox) { 'use strict';
   workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("/"), {
     allowlist: [/^\/$/]
   }));
-  workbox.registerRoute(/\/music/, new workbox.NetworkFirst({
-    "cacheName": "music-html-cache",
-    plugins: []
-  }), 'GET');
 
 }));
