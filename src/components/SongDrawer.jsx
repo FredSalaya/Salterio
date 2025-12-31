@@ -116,13 +116,14 @@ export default function SongDrawer({
                                         <FaYoutube className="text-red-500" />
                                         Video
                                     </h4>
-                                    <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg border border-gray-200">
+                                    <div className="relative w-full rounded-xl overflow-hidden shadow-lg border border-gray-200 bg-gray-100" style={{ paddingBottom: '56.25%' }}>
                                         <iframe
                                             src={getYoutubeEmbedUrl(song.youtube_url)}
                                             title={song.titulo || 'Video'}
-                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            frameBorder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                             allowFullScreen
-                                            className="absolute inset-0 w-full h-full"
+                                            className="absolute top-0 left-0 w-full h-full"
                                         />
                                     </div>
                                 </section>
