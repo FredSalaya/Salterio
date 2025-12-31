@@ -2,7 +2,37 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { FaFilePdf, FaYoutube, FaSpotify, FaHistory, FaBookOpen } from 'react-icons/fa'
 
+// Helper to convert YouTube URL to embed format
+function getYoutubeEmbedUrl(url) {
+    if (!url) return ''
 
+    // Handle different YouTube URL formats
+    let videoId = ''
+
+    // youtube.com/watch?v=VIDEO_ID
+    const watchMatch = url.match(/[?&]v=([^&#]+)/)
+    if (watchMatch) {
+        videoId = watchMatch[1]
+    }
+
+    // youtu.be/VIDEO_ID
+    const shortMatch = url.match(/youtu\.be\/([^?&#]+)/)
+    if (shortMatch) {
+        videoId = shortMatch[1]
+    }
+
+    // youtube.com/embed/VIDEO_ID (already embed format)
+    const embedMatch = url.match(/youtube\.com\/embed\/([^?&#]+)/)
+    if (embedMatch) {
+        return url
+    }
+
+    if (videoId) {
+        return `https://www.youtube.com/embed/${videoId}`
+    }
+
+    return url // Return original if can't parse
+}
 
 export default function SongDrawer({
     isOpen,
@@ -65,7 +95,7 @@ export default function SongDrawer({
                             )}
 
                             {/* Quick Actions */}
-                            <section className="grid grid-cols-2 gap-3">
+                            <section className="space-y-3">
                                 {song.pdf && (
                                     <a
                                         href={song.pdf}
@@ -77,18 +107,26 @@ export default function SongDrawer({
                                         Ver PDF
                                     </a>
                                 )}
-                                {song.youtube_url && (
-                                    <a
-                                        href={song.youtube_url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-center justify-center gap-2 p-3 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-colors font-medium border border-red-100"
-                                    >
-                                        <FaYoutube />
-                                        Ver Video
-                                    </a>
-                                )}
                             </section>
+
+                            {/* YouTube Video Embed */}
+                            {song.youtube_url && (
+                                <section>
+                                    <h4 className="flex items-center gap-2 text-sm font-semibold text-gray-900 mb-3 uppercase tracking-wider">
+                                        <FaYoutube className="text-red-500" />
+                                        Video
+                                    </h4>
+                                    <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg border border-gray-200">
+                                        <iframe
+                                            src={getYoutubeEmbedUrl(song.youtube_url)}
+                                            title={song.titulo || 'Video'}
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowFullScreen
+                                            className="absolute inset-0 w-full h-full"
+                                        />
+                                    </div>
+                                </section>
+                            )}
 
                             {/* Info Grid */}
                             <section className="grid grid-cols-2 gap-4 py-4 border-y border-gray-100">
