@@ -16,6 +16,7 @@ const { data: rows, error } = await supabase
     tono,
     autor,
     version,
+    mp3_urls,
     categorias:canto_categoria(
       categoria:categorias(nombre)
     )
@@ -34,6 +35,7 @@ const data = (rows || []).map((r) => ({
   version: r.version,
   key: r.tono,
   author: r.autor,
+  mp3_urls: r.mp3_urls || [],
   categories: r.categorias.map((c) => c.categoria.nombre),
 }));
 ---
