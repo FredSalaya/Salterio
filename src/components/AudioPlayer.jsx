@@ -20,7 +20,7 @@ function formatTime(seconds) {
 }
 
 export default function AudioPlayer({
-    mp3_urls = [],
+    mp3s = [],
     title = 'Sin título',
     author = 'Desconocido',
     showTitle = true
@@ -36,7 +36,7 @@ export default function AudioPlayer({
     const audioRef = useRef(null)
     const progressRef = useRef(null)
 
-    const hasAudio = mp3_urls && mp3_urls.length > 0
+    const hasAudio = mp3s && mp3s.length > 0
 
     // Cargar volumen del localStorage
     useEffect(() => {
@@ -144,7 +144,7 @@ export default function AudioPlayer({
             {/* Audio Element */}
             <audio
                 ref={audioRef}
-                src={mp3_urls[0] || ''}
+                src={mp3s[0]?.url || mp3s[0] || ''}
                 preload="metadata"
             />
 

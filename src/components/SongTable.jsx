@@ -141,7 +141,7 @@ export default function SongTable({ songs = [] }) {
   }
 
   const handlePlay = (song, index) => {
-    if (!song.mp3_urls || song.mp3_urls.length === 0) {
+    if (!song.mp3s || song.mp3s.length === 0) {
       // No hay audio disponible
       return
     }
@@ -162,7 +162,7 @@ export default function SongTable({ songs = [] }) {
     if (currentSongIndex > 0) {
       const prevIndex = currentSongIndex - 1
       const prevSong = processedSongs[prevIndex]
-      if (prevSong.mp3_urls && prevSong.mp3_urls.length > 0) {
+      if (prevSong.mp3s && prevSong.mp3s.length > 0) {
         setCurrentSong(prevSong)
         setCurrentSongIndex(prevIndex)
         setCurrentTime(0)
@@ -175,7 +175,7 @@ export default function SongTable({ songs = [] }) {
     if (currentSongIndex < processedSongs.length - 1) {
       const nextIndex = currentSongIndex + 1
       const nextSong = processedSongs[nextIndex]
-      if (nextSong.mp3_urls && nextSong.mp3_urls.length > 0) {
+      if (nextSong.mp3s && nextSong.mp3s.length > 0) {
         setCurrentSong(nextSong)
         setCurrentSongIndex(nextIndex)
         setCurrentTime(0)
@@ -239,14 +239,14 @@ export default function SongTable({ songs = [] }) {
   }
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0
-  const hasAudio = currentSong?.mp3_urls && currentSong.mp3_urls.length > 0
+  const hasAudio = currentSong?.mp3s && currentSong.mp3s.length > 0
 
   return (
     <div className="w-full space-y-4">
       {/* Audio Element */}
       <audio
         ref={audioRef}
-        src={currentSong?.mp3_urls?.[0] || ''}
+        src={currentSong?.mp3s?.[0]?.url || currentSong?.mp3s?.[0] || ''}
         preload="metadata"
       />
 
@@ -527,7 +527,7 @@ function TableView({ songs, sortConfig, onSort, favorites, onToggleFavorite, cur
           </thead>
           <tbody className="divide-y divide-gray-100">
             {songs.map((song, idx) => {
-              const hasAudio = song.mp3_urls && song.mp3_urls.length > 0
+              const hasAudio = song.mp3s && song.mp3s.length > 0
               return (
                 <motion.tr
                   key={song.id}
@@ -624,7 +624,7 @@ function GridView({ songs, favorites, onToggleFavorite, currentSong, isPlaying, 
       className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
     >
       {songs.map((song, idx) => {
-        const hasAudio = song.mp3_urls && song.mp3_urls.length > 0
+        const hasAudio = song.mp3s && song.mp3s.length > 0
         return (
           <motion.div
             key={song.id}

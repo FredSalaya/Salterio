@@ -4,7 +4,7 @@ import BodyViewer from './BodyViewer'
 import AudioPlayer from './AudioPlayer'
 import {
     PrinterIcon,
-    PencilSquareIcon,
+    ArrowDownTrayIcon,
     ChevronRightIcon,
     ChevronLeftIcon,
     XMarkIcon
@@ -95,8 +95,52 @@ export default function SongViewer({ song: initialSong }) {
         printWindow.document.close()
     }
 
-    const handleOpenPanel = () => {
-        window.open(`https://dashboard.salterio.site/cantos/${song.id}`, '_blank')
+    const handleDownload = () => {
+        const downloadContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>${song.titulo || 'Canto'}</title>
+                <style>
+                    body { font-family: 'Courier New', Courier, monospace; font-size: 11pt; line-height: 1.4; color: #000; background: #fff; padding: 20px; }
+                    .print-header { text-align: center; margin-bottom: 16pt; padding-bottom: 8pt; border-bottom: 1.5pt solid #333; }
+                    .print-title { font-size: 20pt; font-weight: bold; margin-bottom: 6pt; font-family: Georgia, serif; }
+                    .print-meta { display: flex; justify-content: center; gap: 20pt; font-size: 10pt; }
+                    .print-meta-item { display: inline-flex; align-items: center; gap: 4pt; }
+                    .print-meta-label { font-weight: bold; text-transform: uppercase; font-size: 8pt; color: #555; }
+                    .print-meta-value { font-weight: bold; font-size: 12pt; }
+                    .print-body { padding-left: 10pt; max-width: 800px; margin: 0 auto; }
+                    .print-body p, .print-body .verso { margin-bottom: 4pt; line-height: 2.2; }
+                    .print-body .titulo, .print-body b.titulo { display: block; font-weight: bold; font-size: 10pt; margin-top: 12pt; margin-bottom: 2pt; color: #333; padding-left: 0; font-family: Arial, sans-serif; }
+                    .invisible { visibility: hidden; }
+                    nota.note, .note { position: relative; color: #09A8FA; line-height: 2.2; }
+                    nota.note::after, .note::after { content: attr(data-content); position: absolute; top: -10pt; left: 0; color: #09A8FA; font-family: Arial, Helvetica, sans-serif; font-size: 10pt; font-weight: bold; line-height: 1; white-space: nowrap; }
+                    .note-single { color: #09A8FA; font-weight: bold; font-family: Arial, sans-serif; font-size: 10pt; }
+                </style>
+            </head>
+            <body>
+                <div class="print-header" style="max-width: 800px; margin: 0 auto 16pt auto;">
+                    <div class="print-title">${song.titulo || 'Sin título'}</div>
+                    <div class="print-meta">
+                        <span class="print-meta-item"><span class="print-meta-label">Tono:</span><span class="print-meta-value">${song.tono || '—'}</span></span>
+                        <span class="print-meta-item"><span class="print-meta-label">Autor:</span><span class="print-meta-value">${song.autor || 'Desconocido'}</span></span>
+                    </div>
+                </div>
+                <div class="print-body">${printableBody}</div>
+            </body>
+            </html>
+        `
+        const blob = new Blob([downloadContent], { type: 'text/html;charset=utf-8' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `${song.titulo || 'Canto'}.html`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
     }
 
     return (
@@ -156,29 +200,31 @@ export default function SongViewer({ song: initialSong }) {
                                     Imprimir
                                 </button>
                                 <button
-                                    onClick={handleOpenPanel}
-                                    className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-100 transition-colors text-sm font-medium border border-purple-200"
+                                    onClick={handleDownload}
+                                    className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors text-sm font-medium border border-blue-200"
                                 >
-                                    <PencilSquareIcon className="w-4 h-4" />
-                                    Editar
+                                    <ArrowDownTrayIcon className="w-4 h-4" />
+                                    Descargar
                                 </button>
                             </div>
 
                             {/* Audio Section */}
-                            {song.mp3_urls && song.mp3_urls.length > 0 && (
+                            {song.mp3s && song.mp3s.length > 0 && (
                                 <section>
                                     <h4 className="flex items-center gap-2 text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider">
                                         <FaSpotify className="text-green-500" />
-                                        Audio
+                                        Audios
                                     </h4>
-                                    <div className="space-y-2">
-                                        {song.mp3_urls.map((url, idx) => (
-                                            <audio
-                                                key={idx}
-                                                controls
-                                                className="w-full h-10 rounded-lg"
-                                                src={url}
-                                            />
+                                    <div className="space-y-3">
+                                        {song.mp3s.map((mp3, idx) => (
+                                            <div key={idx} className="flex flex-col gap-1">
+                                                {mp3.titulo && <span className="text-xs font-medium text-gray-700">{mp3.titulo}</span>}
+                                                <audio
+                                                    controls
+                                                    className="w-full h-10 rounded-lg"
+                                                    src={mp3.url}
+                                                />
+                                            </div>
                                         ))}
                                     </div>
                                 </section>
@@ -204,17 +250,33 @@ export default function SongViewer({ song: initialSong }) {
                                 </section>
                             )}
 
-                            {/* PDF Link */}
-                            {song.pdf && (
-                                <a
-                                    href={song.pdf}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center justify-center gap-2 p-2.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors text-sm font-medium border border-red-200"
-                                >
-                                    <FaFilePdf />
-                                    Ver PDF
-                                </a>
+                            {/* PDF Links */}
+                            {song.pdfs && song.pdfs.length > 0 && (
+                                <section>
+                                    <h4 className="flex items-center gap-2 text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider">
+                                        <FaFilePdf className="text-red-500" />
+                                        Documentos PDF
+                                    </h4>
+                                    <div className="flex flex-col gap-2">
+                                        {song.pdfs.map((pdf, idx) => (
+                                            <a
+                                                key={idx}
+                                                href={pdf.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors text-sm font-medium border border-red-200"
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    <FaFilePdf />
+                                                    {pdf.titulo || 'Ver PDF'}
+                                                </div>
+                                                <svg className="w-4 h-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                                </svg>
+                                            </a>
+                                        ))}
+                                    </div>
+                                </section>
                             )}
 
                             {/* Info Grid */}
@@ -235,18 +297,35 @@ export default function SongViewer({ song: initialSong }) {
                                 )}
                             </section>
 
-                            {/* Historia */}
-                            {song.historia && (
+                            {/* Historia / Blog */}
+                            {song.blog ? (
+                                <section>
+                                    <h4 className="flex items-center gap-2 text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider">
+                                        <FaHistory className="text-blue-500" />
+                                        {song.blog.titulo}
+                                    </h4>
+                                    {song.blog.cover_img && (
+                                        <img src={song.blog.cover_img} alt={song.blog.titulo} className="w-full h-32 object-cover rounded-lg mb-3 shadow-sm border border-gray-100" />
+                                    )}
+                                    <p className="text-sm text-gray-600 leading-relaxed bg-blue-50 p-3 rounded-lg border border-blue-100">
+                                        {song.blog.resumen || "Descubre más sobre la historia de este canto."}
+                                    </p>
+                                    <a href={`/blogs/${song.historia}`} target="_blank" rel="noopener noreferrer" className="mt-2 text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1">
+                                        Leer artículo completo
+                                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                    </a>
+                                </section>
+                            ) : song.historia ? (
                                 <section>
                                     <h4 className="flex items-center gap-2 text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider">
                                         <FaHistory className="text-blue-500" />
                                         Historia
                                     </h4>
-                                    <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">
+                                    <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line bg-blue-50 p-3 rounded-lg border border-blue-100 italic">
                                         {song.historia}
                                     </p>
                                 </section>
-                            )}
+                            ) : null}
 
                             {/* Fundamento Bíblico */}
                             {song.fundamento_biblico && (
@@ -267,7 +346,7 @@ export default function SongViewer({ song: initialSong }) {
 
             {/* Audio Player */}
             <AudioPlayer
-                mp3_urls={song.mp3_urls}
+                mp3s={song.mp3s}
                 title={song.titulo}
                 author={song.autor}
             />

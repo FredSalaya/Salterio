@@ -29,15 +29,33 @@ if (error) {
 }
 
 // 🔄 Adaptar al formato que espera SongTable
-const data = (rows || []).map((r) => ({
-  id: r.id,
-  title: r.titulo,
-  version: r.version,
-  key: r.tono,
-  author: r.autor,
-  mp3_urls: r.mp3_urls || [],
-  categories: r.categorias.map((c) => c.categoria.nombre),
-}));
+const data = (rows || []).map((r) => {
+  let parsedMp3s = [];
+  if (r.mp3_urls && r.mp3_urls.length > 0) {
+      parsedMp3s = r.mp3_urls.map(item => {
+          if (typeof item === 'object' && item !== null) return item;
+          if (typeof item === 'string') {
+              try {
+                  const p = JSON.parse(item);
+                  return p;
+              } catch (e) {
+                  return { url: item };
+              }
+          }
+          return null;
+      }).filter(Boolean);
+  }
+
+  return {
+    id: r.id,
+    title: r.titulo,
+    version: r.version,
+    key: r.tono,
+    author: r.autor,
+    mp3s: parsedMp3s,
+    categories: r.categorias.map((c) => c.categoria.nombre),
+  };
+});
 ---
 
 <Layout title="Lista de Canciones">

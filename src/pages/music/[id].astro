@@ -21,12 +21,65 @@ const { data: song, error } = await supabase
 if (error || !song) {
   return Astro.redirect("/music");
 }
+
+let parsedPdfs = [];
+if (song.pdf) {
+    if (typeof song.pdf === 'string') {
+        try {
+            const parsed = JSON.parse(song.pdf);
+            parsedPdfs = Array.isArray(parsed) ? parsed : [{ titulo: 'General', url: song.pdf }];
+        } catch (e) {
+            parsedPdfs = [{ titulo: 'General', url: song.pdf }];
+        }
+    } else if (Array.isArray(song.pdf)) {
+        parsedPdfs = song.pdf;
+    } else if (typeof song.pdf === 'object' && song.pdf !== null) {
+        parsedPdfs = [song.pdf];
+    }
+}
+
+let parsedMp3s = [];
+if (song.mp3_urls && song.mp3_urls.length > 0) {
+    parsedMp3s = song.mp3_urls.map((item, index) => {
+        if (typeof item === 'object' && item !== null) {
+            return { titulo: item.titulo || `Pista ${index + 1}`, url: item.url || '' };
+        }
+        if (typeof item === 'string') {
+            try {
+                const parsed = JSON.parse(item);
+                return { titulo: parsed.titulo || `Pista ${index + 1}`, url: parsed.url || item };
+            } catch (e) {
+                return { titulo: `Pista ${index + 1}`, url: item };
+            }
+        }
+        return null;
+    }).filter(Boolean);
+}
+
+let blogDetails = null;
+if (song.historia && !isNaN(Number(song.historia)) && Number(song.historia) > 0) {
+    const { data: blog, error: blogErr } = await supabase
+        .from('blogs')
+        .select('titulo, resumen, cuerpo_md, cover_img')
+        .eq('id', Number(song.historia))
+        .single();
+    if (!blogErr && blog) {
+        blogDetails = blog;
+    }
+}
+
+const cleanSong = {
+    ...song,
+    pdfs: parsedPdfs,
+    mp3s: parsedMp3s,
+    blog: blogDetails,
+};
 ---
 
-<Layout title={song.titulo}>
+<Layout title={cleanSong.titulo}>
   <h2 class="text-center my-8">
     <FancyText
-      text={song.titulo}
+      text={cleanSong.titulo}
       colors={["#40ffaa", "#4079ff", "#ff40c6"]}
       animationSpeed={4}
       showBorder
@@ -35,5 +88,5 @@ if (error || !song) {
     />
   </h2>
   <br />
-  <SongViewer song={song} client:only="react" />
+  <SongViewer song={cleanSong} client:only="react" />
 </Layout>
