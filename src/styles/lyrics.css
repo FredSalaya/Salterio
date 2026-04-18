@@ -64,7 +64,7 @@ line-height: 2;
   line-height: 1;
   font-family: 'Optima', sans-serif;
   font-size: 13px;
-  
+  white-space: nowrap;
 } 
 
 
@@ -131,7 +131,7 @@ line-height: 2;
     line-height: 1;
     font-size: small;
     background: #ffffff;
-
+    white-space: nowrap;
   }
 
 
