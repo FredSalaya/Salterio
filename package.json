@@ -25,6 +25,7 @@
     "dexie-react-hooks": "^4.2.0",
     "framer-motion": "^12.23.24",
     "gsap": "^3.13.0",
+    "html2pdf.js": "^0.14.0",
     "motion": "^12.19.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

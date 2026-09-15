@@ -95,52 +95,57 @@ export default function SongViewer({ song: initialSong }) {
         printWindow.document.close()
     }
 
-    const handleDownload = () => {
-        const downloadContent = `
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>${song.titulo || 'Canto'}</title>
-                <style>
-                    body { font-family: 'Courier New', Courier, monospace; font-size: 11pt; line-height: 1.4; color: #000; background: #fff; padding: 20px; }
-                    .print-header { text-align: center; margin-bottom: 16pt; padding-bottom: 8pt; border-bottom: 1.5pt solid #333; }
-                    .print-title { font-size: 20pt; font-weight: bold; margin-bottom: 6pt; font-family: Georgia, serif; }
-                    .print-meta { display: flex; justify-content: center; gap: 20pt; font-size: 10pt; }
-                    .print-meta-item { display: inline-flex; align-items: center; gap: 4pt; }
-                    .print-meta-label { font-weight: bold; text-transform: uppercase; font-size: 8pt; color: #555; }
-                    .print-meta-value { font-weight: bold; font-size: 12pt; }
-                    .print-body { padding-left: 10pt; max-width: 800px; margin: 0 auto; }
-                    .print-body p, .print-body .verso { margin-bottom: 4pt; line-height: 2.2; }
-                    .print-body .titulo, .print-body b.titulo { display: block; font-weight: bold; font-size: 10pt; margin-top: 12pt; margin-bottom: 2pt; color: #333; padding-left: 0; font-family: Arial, sans-serif; }
-                    .invisible { visibility: hidden; }
-                    nota.note, .note { position: relative; color: #09A8FA; line-height: 2.2; }
-                    nota.note::after, .note::after { content: attr(data-content); position: absolute; top: -10pt; left: 0; color: #09A8FA; font-family: Arial, Helvetica, sans-serif; font-size: 10pt; font-weight: bold; line-height: 1; white-space: nowrap; }
-                    .note-single { color: #09A8FA; font-weight: bold; font-family: Arial, sans-serif; font-size: 10pt; }
-                </style>
-            </head>
-            <body>
-                <div class="print-header" style="max-width: 800px; margin: 0 auto 16pt auto;">
-                    <div class="print-title">${song.titulo || 'Sin título'}</div>
-                    <div class="print-meta">
-                        <span class="print-meta-item"><span class="print-meta-label">Tono:</span><span class="print-meta-value">${song.tono || '—'}</span></span>
-                        <span class="print-meta-item"><span class="print-meta-label">Autor:</span><span class="print-meta-value">${song.autor || 'Desconocido'}</span></span>
+    const handleDownload = async () => {
+        const html2pdf = (await import('html2pdf.js')).default
+
+        // Create a temporary container with the print-ready content
+        const container = document.createElement('div')
+        container.innerHTML = `
+            <div style="font-family: 'Courier New', Courier, monospace; font-size: 11pt; line-height: 1.4; color: #000;">
+                <div style="text-align: center; margin-bottom: 16pt; padding-bottom: 8pt; border-bottom: 1.5pt solid #333;">
+                    <div style="font-size: 20pt; font-weight: bold; margin-bottom: 6pt; font-family: Georgia, serif;">${song.titulo || 'Sin título'}</div>
+                    <div style="display: flex; justify-content: center; gap: 20pt; font-size: 10pt;">
+                        <span style="display: inline-flex; align-items: center; gap: 4pt;"><span style="font-weight: bold; text-transform: uppercase; font-size: 8pt; color: #555;">Tono:</span><span style="font-weight: bold; font-size: 12pt;">${song.tono || '—'}</span></span>
+                        <span style="display: inline-flex; align-items: center; gap: 4pt;"><span style="font-weight: bold; text-transform: uppercase; font-size: 8pt; color: #555;">Autor:</span><span style="font-weight: bold; font-size: 12pt;">${song.autor || 'Desconocido'}</span></span>
                     </div>
                 </div>
-                <div class="print-body">${printableBody}</div>
-            </body>
-            </html>
+                <div class="print-body" style="padding-left: 30pt;">${printableBody}</div>
+            </div>
         `
-        const blob = new Blob([downloadContent], { type: 'text/html;charset=utf-8' })
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = `${song.titulo || 'Canto'}.html`
-        document.body.appendChild(a)
-        a.click()
-        document.body.removeChild(a)
-        URL.revokeObjectURL(url)
+
+        // Apply styles for notes and other elements inside the container
+        const style = document.createElement('style')
+        style.textContent = `
+            .pdf-temp-container .print-body p, .pdf-temp-container .print-body .verso { margin-bottom: 4pt; line-height: 2.2; padding-left: 10pt; }
+            .pdf-temp-container .print-body .titulo, .pdf-temp-container .print-body b.titulo { display: block; font-weight: bold; font-size: 10pt; margin-top: 12pt; margin-bottom: 2pt; color: #333; padding-left: 0; font-family: Arial, sans-serif; }
+            .pdf-temp-container .invisible { visibility: hidden; }
+            .pdf-temp-container nota.note, .pdf-temp-container .note { position: relative; color: #09A8FA; line-height: 2.2; }
+            .pdf-temp-container nota.note::after, .pdf-temp-container .note::after { content: attr(data-content); position: absolute; top: -10pt; left: 0; color: #09A8FA; font-family: Arial, Helvetica, sans-serif; font-size: 10pt; font-weight: bold; line-height: 1; white-space: nowrap; }
+            .pdf-temp-container .note-single { color: #09A8FA; font-weight: bold; font-family: Arial, sans-serif; font-size: 10pt; }
+        `
+        document.head.appendChild(style)
+
+        // Wrap in a container with the class for scoped styles
+        const wrapper = document.createElement('div')
+        wrapper.className = 'pdf-temp-container'
+        wrapper.style.cssText = 'position: absolute; left: -9999px; top: 0; width: 8.5in;'
+        wrapper.appendChild(container)
+        document.body.appendChild(wrapper)
+
+        const opt = {
+            margin:       [0.6, 0.75, 0.6, 0.75],
+            filename:     `${song.titulo || 'Canto'}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        }
+
+        try {
+            await html2pdf().set(opt).from(container).save()
+        } finally {
+            document.body.removeChild(wrapper)
+            document.head.removeChild(style)
+        }
     }
 
     return (
