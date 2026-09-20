@@ -13,7 +13,24 @@ const { id } = Astro.params;
 const { data: song, error } = await supabase
   .from("cantos")
   .select(
-    "id, titulo, tono, autor, version, cuerpo, historia, pdf, fundamento_biblico, youtube_url, mp3_urls",
+    `
+    id,
+    titulo,
+    tono,
+    autor,
+    version,
+    cuerpo,
+    historia,
+    pdf,
+    fundamento_biblico,
+    youtube_url,
+    mp3_urls,
+    tempo,
+    ritmo,
+    categorias:canto_categoria(
+      categoria:categorias(nombre)
+    )
+  `
   )
   .eq("id", id)
   .single();
@@ -68,8 +85,16 @@ if (song.historia && !isNaN(Number(song.historia)) && Number(song.historia) > 0)
     }
 }
 
+let parsedCategorias = [];
+if (song.categorias && Array.isArray(song.categorias)) {
+    parsedCategorias = song.categorias
+        .map((c) => c?.categoria?.nombre)
+        .filter(Boolean);
+}
+
 const cleanSong = {
     ...song,
+    categorias: parsedCategorias,
     pdfs: parsedPdfs,
     mp3s: parsedMp3s,
     blog: blogDetails,

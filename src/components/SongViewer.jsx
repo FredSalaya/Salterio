@@ -42,8 +42,229 @@ export default function SongViewer({ song: initialSong }) {
 
     const printableBody = useMemo(() => {
         const transposed = transposeBody(song.cuerpo || '', 0)
-        return parseLyrics(transposed)
+        const parsed = parseLyrics(transposed)
+        if (parsed.includes('<b class="titulo">')) {
+            const parts = parsed.split(/(?=<b class="titulo">)/g)
+            return parts
+                .map(p => p.trim())
+                .filter(Boolean)
+                .map(p => `<div class="song-section">${p}</div>`)
+                .join('\n')
+        } else {
+            const parts = parsed.split(/<p class="[^"]*">\s*<\/p>/g)
+            return parts
+                .map(p => p.trim())
+                .filter(Boolean)
+                .map(p => `<div class="song-section">${p}</div>`)
+                .join('\n')
+        }
     }, [song.cuerpo])
+
+    const getCategoriesString = () => {
+        if (!song.categorias) return ''
+        if (Array.isArray(song.categorias)) return song.categorias.join(', ')
+        return String(song.categorias)
+    }
+
+    const getPrintStyles = () => `
+        @page {
+            size: letter portrait;
+            margin: 0.45in 0.55in 0.45in 0.55in;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body, .pdf-root {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            font-size: 9pt;
+            line-height: 1.35;
+            color: #0f172a;
+            background: #ffffff;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .print-header {
+            margin-bottom: 12pt;
+            padding-bottom: 8pt;
+            border-bottom: 1.5pt solid #0f172a;
+        }
+        .print-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3pt;
+        }
+        .print-brand {
+            font-size: 7.5pt;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            color: #0284c7;
+            text-transform: uppercase;
+        }
+        .print-scripture {
+            font-size: 8pt;
+            font-style: italic;
+            color: #475569;
+            font-weight: 500;
+        }
+        .print-title {
+            font-size: 19pt;
+            font-weight: 800;
+            font-family: Georgia, 'Times New Roman', serif;
+            color: #0f172a;
+            margin-bottom: 5pt;
+            line-height: 1.15;
+        }
+        .print-meta-grid {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 5pt 14pt;
+            padding: 4pt 8pt;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 4pt;
+        }
+        .print-meta-item {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 3.5pt;
+        }
+        .print-meta-label {
+            font-size: 6.8pt;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #64748b;
+        }
+        .print-meta-value {
+            font-size: 9.5pt;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .print-meta-value.accent {
+            color: #0284c7;
+            font-size: 10.5pt;
+        }
+        .print-meta-value small {
+            font-size: 7pt;
+            font-weight: 600;
+            color: #64748b;
+        }
+        .print-body {
+            column-count: 2;
+            column-gap: 22pt;
+            column-rule: 1px solid #f1f5f9;
+            width: 100%;
+        }
+        .song-section {
+            break-inside: avoid;
+            page-break-inside: avoid;
+            margin-bottom: 10pt;
+            display: inline-block;
+            width: 100%;
+        }
+        .print-body .titulo, .print-body b.titulo {
+            display: block;
+            font-weight: 800;
+            font-size: 8.5pt;
+            color: #334155;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 2pt;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 1.5pt;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        }
+        .print-body p, .print-body .verso {
+            margin-bottom: 2.5pt;
+            line-height: 2.15;
+            padding-left: 2pt;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 9.5pt;
+            color: #0f172a;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .invisible {
+            visibility: hidden;
+        }
+        nota.note, .note {
+            position: relative;
+            color: #0284c7;
+            line-height: 2.15;
+        }
+        nota.note::after, .note::after {
+            content: attr(data-content);
+            position: absolute;
+            top: -9.5pt;
+            left: 0;
+            color: #0284c7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            font-size: 9.5pt;
+            font-weight: 800;
+            line-height: 1;
+            white-space: nowrap;
+        }
+        .note-single {
+            color: #0284c7;
+            font-weight: 800;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            font-size: 9.5pt;
+        }
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    `
+
+    const getPrintContentHtml = () => {
+        const categoriesText = getCategoriesString()
+        return `
+            <div class="print-header">
+                <div class="print-top-bar">
+                    <span class="print-brand">Salterio</span>
+                    ${song.fundamento_biblico ? `<span class="print-scripture">${song.fundamento_biblico}</span>` : ''}
+                </div>
+                <div class="print-title">${song.titulo || 'Sin título'}</div>
+                <div class="print-meta-grid">
+                    <div class="print-meta-item">
+                        <span class="print-meta-label">Tono</span>
+                        <span class="print-meta-value accent">${song.tono || '—'}</span>
+                    </div>
+                    <div class="print-meta-item">
+                        <span class="print-meta-label">Autor</span>
+                        <span class="print-meta-value">${song.autor || 'Desconocido'}</span>
+                    </div>
+                    ${song.tempo ? `
+                    <div class="print-meta-item">
+                        <span class="print-meta-label">Tempo</span>
+                        <span class="print-meta-value">${song.tempo} <small>BPM</small></span>
+                    </div>` : ''}
+                    ${song.ritmo ? `
+                    <div class="print-meta-item">
+                        <span class="print-meta-label">Ritmo</span>
+                        <span class="print-meta-value">${song.ritmo}</span>
+                    </div>` : ''}
+                    ${categoriesText ? `
+                    <div class="print-meta-item">
+                        <span class="print-meta-label">Categoría</span>
+                        <span class="print-meta-value">${categoriesText}</span>
+                    </div>` : ''}
+                    ${song.version ? `
+                    <div class="print-meta-item">
+                        <span class="print-meta-label">Versión</span>
+                        <span class="print-meta-value">${song.version}</span>
+                    </div>` : ''}
+                </div>
+            </div>
+            <div class="print-body">${printableBody}</div>
+        `
+    }
 
     const handlePrint = () => {
         const printWindow = window.open('', '_blank')
@@ -57,36 +278,13 @@ export default function SongViewer({ song: initialSong }) {
             <html>
             <head>
                 <meta charset="UTF-8">
-                <title>${song.titulo || 'Canto'}</title>
-                <style>
-                    @page { size: letter; margin: 0.6in 0.75in; }
-                    * { margin: 0; padding: 0; box-sizing: border-box; }
-                    body { font-family: 'Courier New', Courier, monospace; font-size: 11pt; line-height: 1.4; color: #000; background: #fff; }
-                    .print-header { text-align: center; margin-bottom: 16pt; padding-bottom: 8pt; border-bottom: 1.5pt solid #333; }
-                    .print-title { font-size: 20pt; font-weight: bold; margin-bottom: 6pt; font-family: Georgia, serif; }
-                    .print-meta { display: flex; justify-content: center; gap: 20pt; font-size: 10pt; }
-                    .print-meta-item { display: inline-flex; align-items: center; gap: 4pt; }
-                    .print-meta-label { font-weight: bold; text-transform: uppercase; font-size: 8pt; color: #555; }
-                    .print-meta-value { font-weight: bold; font-size: 12pt; }
-                    .print-body { padding-left: 30pt; }
-                    .print-body p, .print-body .verso { margin-bottom: 4pt; line-height: 2.2; padding-left: 10pt; }
-                    .print-body .titulo, .print-body b.titulo { display: block; font-weight: bold; font-size: 10pt; margin-top: 12pt; margin-bottom: 2pt; color: #333; padding-left: 0; font-family: Arial, sans-serif; }
-                    .invisible { visibility: hidden; }
-                    nota.note, .note { position: relative; color: #09A8FA; line-height: 2.2; }
-                    nota.note::after, .note::after { content: attr(data-content); position: absolute; top: -10pt; left: 0; color: #09A8FA; font-family: Arial, Helvetica, sans-serif; font-size: 10pt; font-weight: bold; line-height: 1; white-space: nowrap; }
-                    .note-single { color: #09A8FA; font-weight: bold; font-family: Arial, sans-serif; font-size: 10pt; }
-                    @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
-                </style>
+                <title>${song.titulo || 'Canto'} - Salterio</title>
+                <style>${getPrintStyles()}</style>
             </head>
             <body>
-                <div class="print-header">
-                    <div class="print-title">${song.titulo || 'Sin título'}</div>
-                    <div class="print-meta">
-                        <span class="print-meta-item"><span class="print-meta-label">Tono:</span><span class="print-meta-value">${song.tono || '—'}</span></span>
-                        <span class="print-meta-item"><span class="print-meta-label">Autor:</span><span class="print-meta-value">${song.autor || 'Desconocido'}</span></span>
-                    </div>
+                <div class="pdf-root" style="padding: 0.1in;">
+                    ${getPrintContentHtml()}
                 </div>
-                <div class="print-body">${printableBody}</div>
                 <script>window.onload = function() { window.print(); window.onafterprint = function() { window.close(); }; };</script>
             </body>
             </html>
@@ -98,34 +296,16 @@ export default function SongViewer({ song: initialSong }) {
     const handleDownload = async () => {
         const html2pdf = (await import('html2pdf.js')).default
 
-        // Create a temporary container with the print-ready content
+        // Create a temporary container with print-ready content
         const container = document.createElement('div')
-        container.innerHTML = `
-            <div style="font-family: 'Courier New', Courier, monospace; font-size: 11pt; line-height: 1.4; color: #000;">
-                <div style="text-align: center; margin-bottom: 16pt; padding-bottom: 8pt; border-bottom: 1.5pt solid #333;">
-                    <div style="font-size: 20pt; font-weight: bold; margin-bottom: 6pt; font-family: Georgia, serif;">${song.titulo || 'Sin título'}</div>
-                    <div style="display: flex; justify-content: center; gap: 20pt; font-size: 10pt;">
-                        <span style="display: inline-flex; align-items: center; gap: 4pt;"><span style="font-weight: bold; text-transform: uppercase; font-size: 8pt; color: #555;">Tono:</span><span style="font-weight: bold; font-size: 12pt;">${song.tono || '—'}</span></span>
-                        <span style="display: inline-flex; align-items: center; gap: 4pt;"><span style="font-weight: bold; text-transform: uppercase; font-size: 8pt; color: #555;">Autor:</span><span style="font-weight: bold; font-size: 12pt;">${song.autor || 'Desconocido'}</span></span>
-                    </div>
-                </div>
-                <div class="print-body" style="padding-left: 30pt;">${printableBody}</div>
-            </div>
-        `
+        container.className = 'pdf-root'
+        container.style.cssText = 'width: 7.5in; background: #ffffff; padding: 0.1in; box-sizing: border-box;'
+        container.innerHTML = getPrintContentHtml()
 
-        // Apply styles for notes and other elements inside the container
         const style = document.createElement('style')
-        style.textContent = `
-            .pdf-temp-container .print-body p, .pdf-temp-container .print-body .verso { margin-bottom: 4pt; line-height: 2.2; padding-left: 10pt; }
-            .pdf-temp-container .print-body .titulo, .pdf-temp-container .print-body b.titulo { display: block; font-weight: bold; font-size: 10pt; margin-top: 12pt; margin-bottom: 2pt; color: #333; padding-left: 0; font-family: Arial, sans-serif; }
-            .pdf-temp-container .invisible { visibility: hidden; }
-            .pdf-temp-container nota.note, .pdf-temp-container .note { position: relative; color: #09A8FA; line-height: 2.2; }
-            .pdf-temp-container nota.note::after, .pdf-temp-container .note::after { content: attr(data-content); position: absolute; top: -10pt; left: 0; color: #09A8FA; font-family: Arial, Helvetica, sans-serif; font-size: 10pt; font-weight: bold; line-height: 1; white-space: nowrap; }
-            .pdf-temp-container .note-single { color: #09A8FA; font-weight: bold; font-family: Arial, sans-serif; font-size: 10pt; }
-        `
+        style.textContent = getPrintStyles()
         document.head.appendChild(style)
 
-        // Wrap in a container with the class for scoped styles
         const wrapper = document.createElement('div')
         wrapper.className = 'pdf-temp-container'
         wrapper.style.cssText = 'position: absolute; left: -9999px; top: 0; width: 8.5in;'
@@ -133,10 +313,10 @@ export default function SongViewer({ song: initialSong }) {
         document.body.appendChild(wrapper)
 
         const opt = {
-            margin:       [0.6, 0.75, 0.6, 0.75],
+            margin:       [0.4, 0.5, 0.4, 0.5],
             filename:     `${song.titulo || 'Canto'}.pdf`,
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
+            html2canvas:  { scale: 2, useCORS: true, letterRendering: true, logging: false },
             jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
         }
 
@@ -294,6 +474,26 @@ export default function SongViewer({ song: initialSong }) {
                                     <span className="block text-xs text-gray-400 uppercase tracking-wider">Autor</span>
                                     <span className="font-medium text-gray-900 text-sm">{song.autor || 'Desconocido'}</span>
                                 </div>
+                                {song.tempo ? (
+                                    <div>
+                                        <span className="block text-xs text-gray-400 uppercase tracking-wider">Tempo</span>
+                                        <span className="font-medium text-gray-900 text-sm">{song.tempo} BPM</span>
+                                    </div>
+                                ) : null}
+                                {song.ritmo ? (
+                                    <div>
+                                        <span className="block text-xs text-gray-400 uppercase tracking-wider">Ritmo / Compás</span>
+                                        <span className="font-medium text-gray-900 text-sm">{song.ritmo}</span>
+                                    </div>
+                                ) : null}
+                                {song.categorias && song.categorias.length > 0 && (
+                                    <div className="col-span-2">
+                                        <span className="block text-xs text-gray-400 uppercase tracking-wider">Categoría</span>
+                                        <span className="font-medium text-gray-900 text-sm">
+                                            {Array.isArray(song.categorias) ? song.categorias.join(', ') : song.categorias}
+                                        </span>
+                                    </div>
+                                )}
                                 {song.version && (
                                     <div className="col-span-2">
                                         <span className="block text-xs text-gray-400 uppercase tracking-wider">Versión</span>
