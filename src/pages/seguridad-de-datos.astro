@@ -1,0 +1,109 @@
+---
+// src/pages/seguridad-de-datos.astro
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Seguridad de los Datos (Data Safety) - Salterio">
+  <div class="max-w-4xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-10">
+      
+      <div class="border-b border-gray-100 pb-6 mb-8">
+        <span class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-3">
+          Google Play & Transparencia
+        </span>
+        <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Formulario de Seguridad de Datos (Data Safety)</h1>
+        <p class="text-sm text-gray-500 mt-2">
+          Declaración oficial sobre la recopilación, uso y protección de datos en la aplicación <strong>Salterio</strong>.
+        </p>
+      </div>
+
+      <div class="prose prose-blue max-w-none text-gray-700 space-y-8 text-sm sm:text-base leading-relaxed">
+        <section>
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">Resumen de Seguridad de Google Play</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 not-prose mb-6">
+            <div class="bg-gray-50 rounded-xl p-4 border border-gray-200/60 text-center">
+              <span class="text-2xl">🔒</span>
+              <h3 class="font-semibold text-gray-900 text-sm mt-2">Cifrado en Tránsito</h3>
+              <p class="text-xs text-gray-500 mt-1">Todos los datos se transfieren mediante HTTPS seguro.</p>
+            </div>
+            <div class="bg-gray-50 rounded-xl p-4 border border-gray-200/60 text-center">
+              <span class="text-2xl">🗑️</span>
+              <h3 class="font-semibold text-gray-900 text-sm mt-2">Eliminación de Datos</h3>
+              <p class="text-xs text-gray-500 mt-1">Los datos locales se borran al limpiar caché o desinstalar.</p>
+            </div>
+            <div class="bg-gray-50 rounded-xl p-4 border border-gray-200/60 text-center">
+              <span class="text-2xl">🚫</span>
+              <h3 class="font-semibold text-gray-900 text-sm mt-2">Sin Venta de Datos</h3>
+              <p class="text-xs text-gray-500 mt-1">No comercializamos ni compartimos datos con anunciantes.</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">Tabla de Datos y Propósitos (Play Console)</h2>
+          <div class="overflow-x-auto not-prose">
+            <table class="w-full text-left text-xs sm:text-sm border-collapse rounded-xl overflow-hidden shadow-sm border border-gray-200">
+              <thead class="bg-gray-100 text-gray-800 font-semibold border-b border-gray-200">
+                <tr>
+                  <th class="p-3">Categoría de Datos</th>
+                  <th class="p-3">Tipo de Dato</th>
+                  <th class="p-3">Recopilado / Efímero</th>
+                  <th class="p-3">Finalidad</th>
+                  <th class="p-3">¿Compartido?</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 bg-white">
+                <tr>
+                  <td class="p-3 font-medium text-gray-900">Identificadores del dispositivo</td>
+                  <td class="p-3 text-gray-600">ID anónimo generado localmente (UUID)</td>
+                  <td class="p-3"><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs">Local</span></td>
+                  <td class="p-3 text-gray-600">Funcionalidad de la app (persistencia de sesión en el chat de IA)</td>
+                  <td class="p-3 text-gray-600">No</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-medium text-gray-900">Mensajes de usuario</td>
+                  <td class="p-3 text-gray-600">Texto de preguntas en el Asistente</td>
+                  <td class="p-3"><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs">Procesado</span></td>
+                  <td class="p-3 text-gray-600">Generación de respuestas interactivas sobre cantos y acordes</td>
+                  <td class="p-3 text-gray-600">No</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-medium text-gray-900">Audio / Micrófono</td>
+                  <td class="p-3 text-gray-600">Flujo acústico para afinador y transcriptor</td>
+                  <td class="p-3"><span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-xs">100% Efímero en memoria</span></td>
+                  <td class="p-3 text-gray-600">Cálculo en tiempo real de tono de instrumentos y subtítulos en vivo</td>
+                  <td class="p-3 text-gray-600">No (nunca se sube)</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-medium text-gray-900">Actividad en la app</td>
+                  <td class="p-3 text-gray-600">Favoritos y preferencias de visualización</td>
+                  <td class="p-3"><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs">Local (SQLite)</span></td>
+                  <td class="p-3 text-gray-600">Personalización y funcionamiento offline</td>
+                  <td class="p-3 text-gray-600">No</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">Permisos del Sistema Android</h2>
+          <ul class="list-disc list-inside space-y-2 text-sm sm:text-base text-gray-600">
+            <li><strong>android.permission.RECORD_AUDIO:</strong> Requerido únicamente cuando el usuario activa el afinador cromático o la herramienta de transcriptor en vivo.</li>
+            <li><strong>android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK:</strong> Requerido para mantener la reproducción continua de pistas y cantos de alabanza cuando la app pasa a segundo plano o se bloquea la pantalla.</li>
+            <li><strong>android.permission.INTERNET:</strong> Utilizado para sincronizar el repertorio de cantos desde la base de datos central y recibir respuestas del asistente.</li>
+            <li><strong>android.permission.MODIFY_AUDIO_SETTINGS:</strong> Utilizado para optimizar las rutas de audio y modo de grabación durante la afinación.</li>
+          </ul>
+        </section>
+
+        <section class="border-t border-gray-100 pt-6">
+          <p class="text-xs text-gray-500">
+            Para más detalles sobre los derechos de los usuarios y el tratamiento de datos, consulte nuestra 
+            <a href="/privacidad" class="text-blue-600 hover:underline font-medium">Política de Privacidad</a>.
+          </p>
+        </section>
+      </div>
+
+    </div>
+  </div>
+</Layout>

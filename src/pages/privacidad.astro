@@ -1,0 +1,112 @@
+---
+// src/pages/privacidad.astro
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Política de Privacidad - Salterio">
+  <div class="max-w-4xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-10">
+      
+      <div class="border-b border-gray-100 pb-6 mb-8">
+        <span class="inline-block bg-purple-100 text-purple-800 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-3">
+          Legal y Privacidad
+        </span>
+        <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Política de Privacidad</h1>
+        <p class="text-sm text-gray-500 mt-2">
+          Última actualización: 23 de septiembre de 2026 | Salterio (Fred Alvarez Labs)
+        </p>
+      </div>
+
+      <div class="prose prose-purple max-w-none text-gray-700 space-y-6 text-sm sm:text-base leading-relaxed">
+        <section>
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">1. Introducción</h2>
+          <p>
+            En <strong>Salterio</strong> (desarrollado por <em>Fred Alvarez Labs</em>), respetamos y valoramos su privacidad. Esta Política de Privacidad describe cómo recopilamos, utilizamos, protegemos y manejamos la información al utilizar nuestra aplicación móvil <strong>Salterio</strong> (disponible para Android e iOS) y nuestra plataforma web.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">2. Permisos y Uso de Funcionalidades Sensibles</h2>
+          <div class="space-y-4">
+            <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+              <h3 class="font-semibold text-gray-900 text-base mb-1">🎤 Uso del Micrófono (Permiso RECORD_AUDIO)</h3>
+              <p class="text-sm text-gray-600">
+                Salterio solicita acceso al micrófono del dispositivo exclusivamente para dos herramientas interactivas:
+              </p>
+              <ul class="list-disc list-inside text-sm text-gray-600 mt-2 space-y-1">
+                <li><strong>Afinador de Instrumentos:</strong> Analiza las frecuencias acústicas en tiempo real en la memoria del dispositivo para indicar si las cuerdas están afinadas.</li>
+                <li><strong>Transcriptor en Vivo:</strong> Convierte la voz a texto de manera local para subtítulos y accesibilidad.</li>
+              </ul>
+              <p class="text-xs text-purple-700 font-medium mt-2">
+                * Importante: El audio nunca se graba, no se almacena en ningún servidor ni se comparte con terceros. Todo el procesamiento ocurre de forma efímera en su dispositivo.
+              </p>
+            </div>
+
+            <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+              <h3 class="font-semibold text-gray-900 text-base mb-1">🎵 Reproducción Multimedia en Segundo Plano (FOREGROUND_SERVICE)</h3>
+              <p class="text-sm text-gray-600">
+                La app utiliza el servicio de reproducción multimedia para permitir que los cantos, pistas y audios continúen reproduciéndose de forma fluida mientras utiliza otras aplicaciones o cuando la pantalla de su dispositivo se encuentra bloqueada.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">3. Información que Recopilamos y Procesamos</h2>
+          <ul class="list-disc list-inside space-y-2 text-sm sm:text-base text-gray-600">
+            <li>
+              <strong>Identificador Anónimo de Dispositivo (Device ID):</strong> Generamos un identificador aleatorio (UUID) almacenado localmente en su dispositivo que se utiliza únicamente para conservar la sesión del Asistente Virtual (Chat) durante su uso. No está vinculado a su identidad personal ni a datos biométricos.
+            </li>
+            <li>
+              <strong>Consultas al Asistente Virtual:</strong> Las preguntas o mensajes enviados en la sección de Chat se transmiten de forma cifrada a nuestro servicio de procesamiento para generar respuestas en tiempo real sobre cantos, acordes y contenidos.
+            </li>
+            <li>
+              <strong>Almacenamiento Local (Caché Offline):</strong> Los cantos, categorías, reflexiones, favoritos y configuraciones de tema se almacenan localmente en su dispositivo (SQLite / almacenamiento local) para permitir el acceso total sin conexión a internet.
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">4. Seguridad y Cifrado de Datos</h2>
+          <p>
+            Todas las transferencias de datos entre la aplicación y nuestros servidores (sincronización con Supabase y consultas del asistente virtual) se realizan a través de protocolos seguros con cifrado <strong>HTTPS / TLS</strong> estándar en la industria.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">5. Retención y Eliminación de Datos</h2>
+          <p>
+            No almacenamos perfiles personales de usuarios ni cuentas obligatorias para el uso básico del salterio. El usuario puede borrar en cualquier momento todos los datos locales (favoritos, historial de chat y caché) simplemente limpiando los datos de la aplicación desde los ajustes de su sistema operativo o desinstalando la aplicación.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">6. Privacidad de Menores</h2>
+          <p>
+            Nuestras aplicaciones y servicios están diseñados para el público en general y no recopilan intencionadamente información personal de niños ni menores de edad. Cumplimos con las normativas internacionales de protección de privacidad infantil aplicables.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">7. Modificaciones a esta Política</h2>
+          <p>
+            Podemos actualizar nuestra Política de Privacidad periódicamente. Cualquier cambio significativo será publicado en esta misma página con la fecha de última actualización.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">8. Contacto</h2>
+          <p>
+            Si tiene alguna duda, comentario o solicitud relacionada con esta Política de Privacidad o el tratamiento de datos, puede comunicarse con nosotros a través de:
+          </p>
+          <div class="mt-3 p-4 bg-purple-50 rounded-xl border border-purple-100 text-purple-950 text-sm">
+            <p><strong>Desarrollador:</strong> Fred Alvarez Labs</p>
+            <p><strong>Proyecto:</strong> Salterio</p>
+            <p><strong>Correo electrónico:</strong> <a href="mailto:soporte@fredalvarezlabs.com" class="text-purple-700 underline font-medium">soporte@fredalvarezlabs.com</a></p>
+          </div>
+        </section>
+      </div>
+
+    </div>
+  </div>
+</Layout>
